@@ -1,0 +1,30 @@
+#include <GL/glut.h>
+void myInit(void)
+{
+	glClearColor(1.0, 0.0, 0.0, 0.0); //배경색은 빨간색
+	glColor3f(0.0f, 1.0f, 0.0f);      // =물체색은 초록색
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(10.0, 630.0, 10.0, 470.0); //가시공간 설정 앞은 시작-끝 가로 뒤는 시작-끝 세로
+}
+void myDisplay(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBegin(GL_QUADS);
+	glVertex3f(20.0, 20.0, 0.0);     //위치들 vertex 4개로 표현
+	glVertex3f(20.0, 30, 0.0);
+	glVertex3f(30.0, 30.0, 0.0);
+	glVertex3f(30.0, 20.0, 0.0);
+	glEnd();
+	glFlush();
+} 
+
+void main(int argc, char** argv)
+{
+	glutInitWindowSize(640, 480);     //스크린 윈도우 창 만든것
+	glutInitWindowPosition(100, 150);  // 좌표찍고 
+	glutCreateWindow("my first attempt");  //상단에 문자열 띄우기
+	glutDisplayFunc(myDisplay); //콜백 투 myDisplay
+	myInit();
+	glutMainLoop();
+}
