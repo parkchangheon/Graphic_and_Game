@@ -1,0 +1,101 @@
+//ball shading 
+
+/*
+#include <GL/glut.h>
+
+static GLfloat yPos = 0;
+static GLfloat dy = 1;
+
+
+void resize(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glFrustum(-5.0, 5.0, -5.0, 5.0, 5.0, 100.0);
+}
+
+void increaseAngle() {
+
+	yPos -= dy;
+
+	if (yPos < -40 || yPos > 10)
+		dy *= -1;
+
+
+	glutPostRedisplay();
+
+}
+
+void animate(int someValue) {
+
+	increaseAngle();
+	glutTimerFunc(50, animate, 1); //
+}
+
+void pingpong() {
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_position[] = { 1,2, 3, 0 };
+
+
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
+
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_shininess[] = { 50.0 };
+
+	GLfloat mat_specular1[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse1[] = { 0.0, 1.0, 0.0, 1.0 };
+	GLfloat mat_shininess1[] = { 50.0 };
+
+
+
+	glTranslatef(0, 0, -50);
+
+	glPushMatrix();
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glTranslatef(0, -30, 0);
+	glutSolidCube(20);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(0, yPos, 0);
+	glTranslatef(0, 30, 0);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular1);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse1);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess1);
+	glutSolidSphere(10, 30, 30);
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+int main() {
+
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("example");
+	glutDisplayFunc(pingpong);
+	glutReshapeFunc(resize);
+	glutTimerFunc(30, animate, 1);
+	glutMainLoop();
+
+	return 0;
+
+}
