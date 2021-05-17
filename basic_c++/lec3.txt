@@ -1,0 +1,42 @@
+#include <iostream>
+
+using namespace std;
+
+class Circle {
+public:
+	int radius;
+	Circle();
+	Circle(int r);
+	double getArea();
+};
+
+Circle::Circle() {
+	radius = 1;
+	cout << "반지름 " << radius << "원생성" << endl;
+}
+Circle::Circle(int r) {
+	radius = r;
+	cout << "반지름 " << radius << "원생성" << endl;
+}
+
+
+double Circle::getArea() {
+	return 3.14 * radius * radius;
+}
+
+//윗부분을 헤더 파일로 만들고 
+//중복을 허용하기 위해 ifndef ~
+//define ~ 
+//endif 해준다.
+
+int main() {
+	Circle donut;
+	donut.radius = 1;
+	double area = donut.getArea();
+	cout << "도넛은 : " << area << endl;
+
+
+	Circle pizza(30);
+	area = pizza.getArea();
+	cout << "피자는 : " << area << endl;
+}
