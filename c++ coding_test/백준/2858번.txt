@@ -1,0 +1,26 @@
+#include<iostream>
+
+using namespace std;
+
+int main() {
+	int r, b;
+	int count = 0;
+	cin >> r >> b;
+
+	int i = 0;
+
+	while (++i)
+	{
+		if (b % i == 0) {
+			int row = b / i;
+
+			if ((row + i + 2) * 2 == r) {
+				cout << row + 2 << ' ' << i + 2 << endl;
+				break;
+			}
+		}
+		else
+			continue;
+	}
+	return 0;
+}
