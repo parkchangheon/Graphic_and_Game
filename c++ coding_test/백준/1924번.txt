@@ -1,0 +1,24 @@
+//1924
+
+#include<iostream>
+
+using namespace std;
+
+int main() {
+	string yoyil[7] = { "SUN","MON","TUE","WED","THU","FRI","SAT" };
+	int MD[13] = { 0, 31,28,31,30,31,30,31,31,30,31,30,31 };
+	int x, y;
+	cin >> x >> y;
+
+
+	int tmp = 0;
+	for (int i = 0; i < x; i++) {
+		tmp += MD[i];
+	}
+	tmp += y;
+
+	int res = tmp % 7;
+	cout << yoyil[res];
+	
+
+}
