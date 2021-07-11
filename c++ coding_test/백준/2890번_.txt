@@ -1,0 +1,115 @@
+
+//2890번
+/*
+#include<iostream>
+#include<cstdlib>
+#include<typeinfo>
+#include<string>
+
+using namespace std;
+
+int main() {
+	int r = 10, c = 10;
+
+	string arr[10] = {
+		{"S.....111F"},
+		{"S....222.F"},
+		{"S...333..F"},
+		{"S..444...F"},
+		{"S.555....F"},
+		{"S666.....F"},
+		{"S.777....F"},
+		{"S..888...F"},
+		{"S...999..F"},
+		{"S........F"}
+	};
+
+	int rank[11] = { NULL, };
+	int max = 0;
+	for (int i = 0; i < 10; i++) {
+		for (int j = 8; j > 2; j--) {
+			
+			if (arr[i][j] != '.') {
+				cout << arr[i][j] << endl;
+				char tmp = arr[i][j];
+				int num = (int)tmp;
+				rank[num] = j;
+				break;
+
+			}
+
+		}
+
+	}
+
+	for (int i = 1; i < 11; i++) {
+		if (rank[i] != NULL) {
+			cout << max - rank[i] + 1<<endl;
+		}
+		
+	}
+
+}
+*/
+
+
+
+//2890번 
+/*
+#include<iostream>
+#include<vector>
+#include<string>
+#include<algorithm>
+#include<functional>
+
+using namespace std;
+
+const int MAX = 50;
+
+int R, C;
+string s[MAX];
+int arr[MAX];
+
+bool cmp(pair<int, int> a, pair<int, int> b) {
+	if (a.first > b.first)
+		return true;
+	return false;
+}
+
+
+int main() {
+	ios_base::sync_with_stdio(0); //c의 stdio와 동기화 시키지 않는 역할. cin/cout/과 getchar을 같이 쓰면 안됨
+	cin.tie(0); // cin 과 cout이 묶여있는 것을 풀어준다.
+	cin >> R >> C;
+
+	vector<pair<int, int>>v; //카약의 머리 위치, 카약번호
+	for (int i = 0; i < R; i++) {
+		cin >> s[i];
+		for (int j = s[i].length() - 1; j >= 0; j--) {
+			if (s[i][j] >= '1' && s[i][j] <= '9') {
+				v.push_back({ j,s[i][j] - '0' }); // 아스키 코드표로 넣어줌?
+				break;
+			}
+		}
+	}
+
+	sort(v.begin(), v.end(), cmp); // 카약 위치를 기준으로 정렬
+
+	int rank = 1;
+	arr[v[0].second] = rank;
+	int prev = v[0].first;
+	for (int i = 1; i < v.size(); i++) {
+		if (prev == v[i].first)
+			arr[v[i].second] = rank;
+		else {
+			arr[v[i].second] = ++rank;
+			prev = v[i].first;
+		}
+
+		for (int i = 1; i <= 9; i++)
+			cout << arr[i] << '\n';
+	}
+
+	return 0;
+}
+*/
