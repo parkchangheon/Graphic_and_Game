@@ -1,0 +1,51 @@
+//5426번
+/*
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+int main() {
+	int m;
+	cin >> m;
+
+
+
+	for (int i = 0; i < m; i++) {
+		string s;
+		cin >> s;
+
+		int n = sqrt(s.length());
+		char** arr;
+		arr = new char* [n];
+
+		for (int i = 0; i < n; i++) {
+			arr[i] = new char[n];
+		}
+
+		char** res;
+		res = new char* [n];
+
+		for (int i = 0; i < n; i++) {
+			res[i] = new char[n];
+		}
+
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < n; k++) {
+				arr[j][k] = s[3 * j + k];
+			}
+		}
+
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < n; k++) {
+				char tmp;
+				res[j][k] = arr[k][n -1- j];
+				cout << res[j][k];
+			}
+		}
+
+		cout << endl;
+
+	}
+}
+
+*/
