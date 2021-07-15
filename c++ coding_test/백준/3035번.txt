@@ -1,0 +1,39 @@
+//3035번
+
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int main()
+{
+	int r, c, zr, zc;
+	cin >> r >> c >> zr >> zc;
+
+	vector<string> v;
+	vector<string>result;
+	for (int i = 0; i < r; i++) {
+		string tmp;
+		cin >> tmp;
+		v.push_back(tmp);
+	}
+
+	
+	for (int i = 0; i < r; i++) {
+		string tmp_s = "";
+		for (int j = 0; j < c; j++) {
+			for (int k = 0; k < zc; k++) {
+				tmp_s += v[i][j];
+			}
+		}
+		for (int j = 0; j < zr; j++) {
+			result.push_back(tmp_s);
+		}
+	}
+
+	for (int i = 0; i < result.size(); i++) {
+		cout << result[i]<<endl;
+	}
+
+	
+	
+}

@@ -1,0 +1,44 @@
+//2755번
+#include<iostream>
+#include<utility>
+#include<string>
+#include<cmath>
+
+using namespace std;
+
+int main() {
+	int num;
+	cin >> num;
+
+	double result = 0.0;
+	int hap = 0;
+	pair<string, double> rank[13] = {
+		{"A+",4.3},{"A0",4.0},{"A-",3.7},
+		{"B+",3.3},{"B0",3.0},{"B-",2.7},
+		{"C+",2.3},{"C0",2.0},{"C-",1.7},
+		{"D+",1.3},{"D0",1.0},{"D-",0.7},
+		{"F",0.0}
+	};
+
+	string sub;
+	int hak;
+	string score;
+
+	
+
+	for (int i = 0; i < num; i++) {
+		cin >> sub >> hak >> score;
+		for (int j = 0; j < 13; j++) {
+			if (rank[j].first == score)
+				result += (hak * rank[j].second);
+		}
+		hap += hak;
+
+	}
+
+	result = result / hap;
+	result = round(result * 100) / 100;
+	cout << result;
+
+
+}
