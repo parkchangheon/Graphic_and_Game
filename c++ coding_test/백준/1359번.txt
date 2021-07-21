@@ -1,0 +1,64 @@
+
+/*
+//1359번 *
+#include<iostream>
+#include<cstdio>
+
+using namespace std;
+
+int factorial(int x) {
+	if (x != 0)
+		return x * factorial(x - 1);
+	else if(x==0)
+		return 1;
+}
+
+float Combination(int a, int b) {
+	return factorial(a) / (factorial(b) * factorial(a - b));
+}
+
+//int main() {
+//	//1~n까지 수중 m개를 고르고 k개가 같으면 당첨.=>확률?
+//
+//	int n, m, k;
+//	cin >> n >> m >> k;
+//	//3 1 1 
+//
+//	float res=0.0f;
+//	while (m >= k) {
+//		res += (1 / (comb(n, m) * comb(m, k)));
+//		k++;
+//	}
+//	
+//	cout << res;
+//	printf("%.16f", res);
+//}
+
+
+int main()
+{
+	int n, m, k;
+
+	cin >> n >> m >> k;
+
+	double res = 0.0;
+	double p = Combination(n, m);
+	while (m >= k)
+	{
+		if (n - m < m - k)
+		{
+			k++;
+			continue;
+		}
+
+		double c = Combination(m, k) * Combination(n - m, m - k);
+
+		res += c / p;
+		k++;
+
+	} 
+	printf("%.16f", res);
+	return 0;
+}
+
+*/
