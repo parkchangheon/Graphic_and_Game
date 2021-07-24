@@ -1,0 +1,45 @@
+number=6
+inf = 999999
+a=[
+    [0,2,5,1,inf,inf],
+    [2,0,3,2,inf,inf],
+    [5,3,0,3,1,5],
+    [1,2,3,0,1,inf],
+    [inf,inf,1,1,0,2],
+    [inf,inf,5,inf,2,0]
+]
+v=[0]*6
+d=[0]*6
+
+#선형탐색 방법
+def getsmallindex():
+    mini=inf
+    index=0
+    for i in range(number):
+        if d[i]<mini and not v[i]:
+            mini=d[i]
+            index=i
+            
+    return index
+
+
+#다익스트라 수행
+
+def dijkstra(start):
+    for i in range(number):
+        d[i]=a[start][i]
+        
+    v[start]=True
+    for i in range(number-2):
+        current=getsmallindex()
+        v[current]=True
+        for j in range(6):
+            if not v[j]:
+                if d[current]+a[current][j]<d[j]:
+                    d[j]=d[current]+a[current][j]
+                    
+                    
+                    
+dijkstra(0)
+for i in range(number):
+    print(d[i])

@@ -1,0 +1,7 @@
+# 플로이드 와샬 
+
+for k in range(): # 거쳐가는 노드
+    for i in range(): # 시작노드
+        for j in range(): # 종료 노드
+            if d[i][k]d[k][j]<d[i][j]:
+                d[i][j]=d[i][k]d[k][j]

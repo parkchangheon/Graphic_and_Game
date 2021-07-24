@@ -1,0 +1,24 @@
+record=["Enter uid1234 Muzi", "Enter uid4567 Prodo",
+        "Leave uid1234","Enter uid1234 Prodo","Change uid4567 Ryan"]
+
+record=list(map(lambda r: r.split(),record))
+
+users={}
+
+for rec in record:
+    if len(rec)>2:
+        users[rec[1]] = rec[2]
+    
+print(users)
+
+msg={'Enter':'님이 들어왔습니다.','Leave' : '님이 나갔습니다.'}
+
+msgs=[]
+for rec in record:
+    if rec[0]!='Change':
+        msgs.append(users[rec[1]]+msg[rec[0]])
+    
+    
+    
+    
+print(msgs)

@@ -1,0 +1,104 @@
+# 라인 문제  나잡아봐라
+#내가 푼 방법 =>dfs 이용 
+def dfs(c,b,cnt):
+    global count
+    print(c,b,cnt)
+    
+    if c<=b: # 잡혔을때, 최소 카운트인지
+        if cnt<=count:
+            count=cnt
+            return
+        
+        
+    else: # 같지 않을때
+        if c>200000: #코니가 사정권 밖 => 게임 끝
+            count=-1
+            return
+        
+        else: #코니가 사정권일때 
+            if b>200000: # 만약 브라운이 20만보다 크면
+                return
+            
+            else: # 20만 보다 작거나 같다면,
+                if b>=0 and c>=0:
+                    cnt+=1
+                    if c+cnt<=200000:
+                        
+                        dfs(c+cnt,b-1,cnt)
+                        dfs(c+cnt,b+1,cnt)
+                        dfs(c+cnt,2*b,cnt)
+                        cnt-=1
+                
+                
+                
+        
+        
+        
+
+C,B=map(int,input().split())
+count=999999
+
+dfs(C,B,0)
+        
+print(count)
+
+
+
+
+
+=======================정답============================
+
+
+
+
+from collections import deque
+
+def solve(cp,bp):
+    time=0
+    visit=[[0]*2 for _ in range(200001)]
+    q=deque()
+    q.append((bp,0))
+    
+    while 1:
+        cp+=time
+        
+        if cp>200000:
+            return -1
+        if visit[cp][time%2]:
+            return time
+        
+        for i in range(0,len(q)):
+            current=q.popleft()
+            currentpos=current[0]
+            newTime=(current[1]+1)%2
+            
+            
+            newpos=currentpos-1
+            if newpos>=0 and not visit[newpos][newTime]:
+                visit[newpos][newTime] = True
+                q.append((newpos,newTime))
+                
+                
+            newpos=currentpos+1
+            if newpos>=0 and not visit[newpos][newTime]:
+                visit[newpos][newTime] = True
+                q.append((newpos,newTime))
+                
+                
+            newpos=currentpos*2
+            if newpos>=0 and not visit[newpos][newTime]:
+                visit[newpos][newTime] = True
+                q.append((newpos,newTime))
+                
+        time+=1
+
+            
+C,B=map(int,input().split())
+res=solve(C,B)
+print(res)
+
+
+
+
+
+
