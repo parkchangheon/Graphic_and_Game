@@ -1,0 +1,30 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+int main() {
+	int n;
+	cin >> n;
+
+	vector<int> a;
+
+	for (int i = 0; i < n; i++) {
+		int tmp;
+		cin >> tmp;
+
+		a.push_back(tmp);
+	}
+
+	sort(a.begin(),a.end(),greater<int>());
+	int result=0;
+	for (int i = 0; i < n; i++) {
+		if (a[i] - i > 0)
+			result += (a[i] - i);
+		else
+			break;
+	}
+
+	cout << result;
+}

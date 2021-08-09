@@ -1,0 +1,99 @@
+/*
+//1302번 (실버 4)
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+int main() {
+	int n;
+	pair<string, int> v[1000];
+
+	cin >> n;
+	int index = 0;
+
+	for (int i = 0; i < n; i++) {
+		string tmp;
+		cin >> tmp;
+		bool flag = false;
+
+		for (int j = 0; j < n; j++) {
+
+			if (v[j].first == tmp)
+			{
+				v[j].second++;
+				flag = true;
+				break;
+			}
+		}
+		
+		if (flag == false) {
+			v[index].first = tmp;
+			v[index].second = 1;
+			index++;
+		}
+	}
+	int max = 0;
+	int max_index = 0;
+	for (int i = 0; i < index; i++) {
+		if (v[i].second > max)
+		{
+			max = v[i].second;
+			max_index = i;
+		}
+		
+	}
+	cout << max << endl << v[max_index].first << endl;
+}
+*/
+
+//--> sorting 까지 완료 된것.
+
+/*
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+int main() {
+	int n;
+	cin >> n;
+	vector<string> v(n);
+
+	for (int i = 0; i < n; i++) {
+		cin >> v[i];
+	}
+
+	int max_num = 0;
+	int num = 0;
+	string temp = v[0];
+	string result="";
+
+	sort(v.begin(), v.end());
+
+	for (int i = 0; i < v.size(); i++) {
+		if (temp == v[i])
+		{
+			num++;
+			continue;
+		}
+
+
+		else {
+			if (max_num < num) {
+				max_num = num;
+				result = temp;
+			}
+			temp = v[i];
+			num = 1;
+		}
+	}
+
+	if (max_num < num)
+		result = temp;
+
+	cout << result << endl;
+}
+*/
+
+
