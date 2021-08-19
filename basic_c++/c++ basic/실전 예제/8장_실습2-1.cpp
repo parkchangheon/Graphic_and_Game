@@ -189,8 +189,9 @@ protected:
 
 		for (int i = 0; i < pages; i++) {
 			availableCount--;
-			return true;
 		}
+		return true;
+
 	};
 
 	string getModel(){ return this->model; }
