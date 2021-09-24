@@ -1,0 +1,32 @@
+//백준 2145
+/*
+#include<iostream>
+#include<vector>
+#include<string>
+using namespace std;
+
+int main() {
+	while (true) {
+		string tmp;
+		cin >> tmp;
+		if (tmp == "0")
+			break;
+
+		int temp = 0;
+
+		while (tmp.size() > 1) {
+			int temp = 0;
+
+			for (int i = 0; i < tmp.size(); i++) {
+				temp += int(tmp[i])-48;
+			}
+			tmp = to_string(temp);
+			
+		}
+		cout << tmp<<endl;
+
+	}
+
+
+}
+*/

@@ -1,0 +1,52 @@
+//4659번
+
+
+#include<iostream>
+using namespace std;
+
+char voul[5] = { 'a','e','i','o','u' };
+bool* voul_arr;
+
+bool voul_check(string s) {
+	bool flag = false;
+	for (int i = 0; i < s.size(); i++) {
+		for (int j = 0; j < 5; j++) {
+			if (voul[j] == s[i]) 
+				return true;
+		}
+	}
+	if (flag == false)
+		return false;
+}
+
+
+bool count_letter(string s) {
+	int count = 1;
+	for (int i = 1; i < s.size(); i++) {
+
+
+	}
+}
+
+bool check(string s){
+
+	voul_arr = new bool[s.size()];
+
+	if (voul_check(s) == false)
+		return false;
+
+	else {
+		
+	}
+}
+
+int main() {
+	string tmp;
+	cin >> tmp;
+
+	if (check(tmp) == true)
+		cout << "<" << tmp << ">" << "is acceptable";
+	else
+		cout << "<" << tmp << ">" << "is not acceptable";
+
+}
