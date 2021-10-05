@@ -1,0 +1,69 @@
+#include<iostream>
+#include <algorithm>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        int ti;
+        cin >> ti;
+        int* arr = new int[ti];
+        int max_count = 0;
+        int max_num=0;
+        int tmp_count = 1;
+
+        for (int i = 0; i < ti; i++) {
+            cin >> arr[i];
+        }
+
+        sort(arr, arr + ti);
+        
+        for (int i = 0; i < ti-1; i++) {
+
+            if (arr[i] == arr[i + 1]) {
+                tmp_count += 1;
+                
+                if (i == ti - 2) {
+                    if (tmp_count > max_count) {
+                        max_count = tmp_count;
+                        tmp_count = 1;
+                        max_num = arr[i];
+                    }
+                }
+
+            }
+
+            else {
+                if (tmp_count > max_count) {
+                    max_count = tmp_count;
+                    tmp_count = 1;
+                    max_num = arr[i];
+                }
+            }
+        }
+
+
+        if (max_count<=int(ti / 2)) {
+            cout << "SYJKGW" << endl;
+        }
+        else {
+            cout << max_num << endl;
+        }
+
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
