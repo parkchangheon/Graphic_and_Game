@@ -1,0 +1,86 @@
+//18111번
+
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+
+
+
+
+int main() {
+	int n, m, b;
+	double sum = 0;
+	double average = 0;
+	int time = 0;
+	cin >> n >> m >> b;
+	int tmp_b = b;
+	int na = n * m;
+
+	int** arr = new int*[n];
+	for (int i = 0; i < n; i++) {
+		arr[i] = new int[m];
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> arr[i][j];
+			sum += arr[i][j];
+		}
+	}
+
+	average = round(sum / na);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			tmp_b += (arr[i][j] - average);
+		}
+	}
+
+	//블록이 부족하다
+	if (tmp_b < 0) {
+		while (tmp_b < 0) {
+			tmp_b = b;
+			average -= 1;
+
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					tmp_b += (arr[i][j] - average);
+				}
+			}
+		}
+
+		int tmp = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				tmp = arr[i][j] - average;
+
+				if (tmp < 0)
+					time += (-tmp);
+				else {
+					time += (tmp * 2);
+				}
+
+			}
+		}
+
+	}
+
+	//블록이 충분하다
+	else {
+		int tmp = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				tmp = arr[i][j] - average;
+
+				if (tmp < 0)
+					time += (-tmp);
+				else {
+					time += (tmp * 2);
+				}
+
+			}
+		}
+	}
+	cout << time << ' ' << average;
+
+}
