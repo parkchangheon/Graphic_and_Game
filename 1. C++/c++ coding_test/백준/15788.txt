@@ -1,0 +1,172 @@
+#include<iostream>
+//#include<vector>
+//using namespace std;
+//
+//int arr[502][502];
+//
+//int row(int i, int n) {
+//	int sum = 0;
+//	for (int j = 0; j < n; j++) {
+//		sum += arr[i][j];
+//	}
+//	return sum;
+//}
+//
+//int col(int j, int n) {
+//	int sum = 0;
+//	for (int i = 0; i < n; i++) {
+//		sum += arr[i][j];
+//	}
+//	return sum;
+//}
+//
+//void noAnswer() {
+//	cout << "-1" << endl;
+//	exit(0);
+//}
+//
+//int main() {
+//	int n;
+//	cin >> n;
+//
+//	int m;
+//	int empty_x=0, empty_y=0;
+//	int sum = 0;
+//	int msum = 0;
+//	int digonalSum[2] = { 0, };
+//
+//
+//	for (int i = 0; i < n; i++) {
+//		for (int j = 0; j < n; j++) {
+//			cin >> arr[i][j];
+//			if (arr[i][j] == 0)
+//			{
+//				i = empty_x;
+//				j = empty_y;
+//			}
+//		}
+//	}
+//
+//	if (empty_x == 0) {
+//		sum = row(1, n);
+//	}
+//	else {
+//		sum = row(0, n);
+//	}
+//
+//	msum = row(empty_x, n);
+//	m = sum - msum;
+//
+//	if (1 > m) {
+//		noAnswer();
+//	}
+//
+//	arr[empty_x][empty_y] = m;
+//	for (int i = 0; i < n; i++) {        //규칙 1, 2 (가로,세로) 확인
+//		if (sum != row(i, n) || sum != col(i, n)) {
+//			noAnswer();
+//		}
+//		digonalSum[0] += arr[i][i];
+//		digonalSum[1] += arr[i][n - i - 1];
+//	}
+//
+//	n = (digonalSum[0] == sum && digonalSum[1] == sum) ? m : -1;    //규칙 3 (대각선) 확인
+//
+//	cout << m << endl;
+//
+//
+//}
+
+
+
+
+
+//=============================새풀이
+
+
+
+
+
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int arr[502][502];
+
+long long int row(int i, int n) {
+	long long int sum = 0;
+	for (int j = 0; j < n; j++) {
+		sum += arr[i][j];
+	}
+	return sum;
+}
+
+long long int col(int j, int n) {
+	long long int sum = 0;
+	for (int i = 0; i < n; i++) {
+		sum += arr[i][j];
+	}
+	return sum;
+}
+
+void noAnswer() {
+	cout << "-1" << endl;
+	exit(0);
+}
+
+int main() {
+	int n;
+	long long int m;
+	int empty_x=0, empty_y=0;
+	long long int sum = 0;
+	long long int msum = 0;
+	long long int temp;
+	long long int digonalSum[2] = { 0, };
+	cin >> n;
+
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> temp;
+			if (temp == 0)
+			{
+				empty_x=i;
+				empty_y=j;
+			}
+			arr[i][j] = temp;
+		}
+	}
+	cout << "empty_x = "<<empty_x << endl;
+
+	if (empty_x != 1) {
+		sum = row(1, n);
+	}
+	else {
+		sum = row(0, n);
+	}
+
+	msum = row(empty_x, n);
+	m = sum - msum;
+	cout << sum << ' ' << msum<<endl;
+	cout << m<<endl;
+
+	if (1 > m) {
+		noAnswer();
+	}
+
+	arr[empty_x][empty_y] = m;
+
+	for (int i = 0; i < n; i++) {
+		if (sum != row(i, n) || sum != col(i, n)) {
+			noAnswer();
+		}
+
+		digonalSum[0] += arr[i][i];
+		digonalSum[1] += arr[i][n - i - 1];
+	}
+
+	m = (digonalSum[0] == sum && digonalSum[1] == sum) ? m : -1;
+
+	cout << m << endl;
+
+}
