@@ -54,3 +54,34 @@ int main() {
 
 
 ==========================================================================
+정답
+
+
+
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    int n, c, w, tree[1001];
+    scanf("%d %d %d", &n, &c, &w);
+    for (int i = 0; i < n; ++i)
+        scanf("%d", tree + i);
+
+    long long int ans = 0, margin;
+    int cost, cnt, t_margin;
+    for (long long unit = 1; unit <= 10000; ++unit) {
+        margin = 0;
+        for (int i = 0; i < n; ++i) {
+            cnt = tree[i] / unit;
+            cost = (tree[i] - 0.5) / unit;
+            t_margin = unit * cnt * w - c * cost;
+            if (t_margin > 0)
+                margin += t_margin;
+        }
+        ans = max(ans, margin);
+    }
+    printf("%lld\n", ans);
+    return 0;
+}
