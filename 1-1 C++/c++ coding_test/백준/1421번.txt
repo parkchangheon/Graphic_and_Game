@@ -85,3 +85,48 @@ int main()
     printf("%lld\n", ans);
     return 0;
 }
+
+
+
+
+
+
+
+==========================================================
+#include<iostream>
+using namespace std;
+
+int main() {
+	int n;
+	int c;
+	int w;
+	int arr[1001];
+	cin >> n >> c >> w;
+	for (int i = 0; i < n; i++) {
+		cin >> arr[i];
+	}
+
+	long long int ans = 0, result;
+	int cut, oak, tmp_result;
+	for (long long i = 1; i <= 10000; i++) {
+		result = 0;
+		for (int j = 0; j < n; j++) {
+			oak = arr[j] / i;
+			if (arr[j] % i == 0)
+				cut = arr[j] / i - 1;
+			else {
+				cut = arr[j] / i;
+			}
+
+			tmp_result = i * oak * w - c * cut;
+
+			if (tmp_result > 0)
+				result += tmp_result;
+		}
+		ans = max(ans, result);
+	}
+	cout << ans;
+
+}
+// n=1000, c=1 w=10000, 모든 나무의 길이는 10000일 경우, int 자료형으로 정답을 계산시
+//오버플로우 발생...
