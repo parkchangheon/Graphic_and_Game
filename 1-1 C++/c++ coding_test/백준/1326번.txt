@@ -83,3 +83,59 @@ int main() {
 ===============================================================
 
 
+#include<iostream>
+#include<queue>
+using namespace std;
+
+queue<pair<int, int>>q;
+int start, ed, jump[10001], n, vis[10001], swc, res;
+
+int main() {
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> jump[i];
+	}
+
+	cin >> start;
+	cin >> ed;
+	q.push(make_pair(start, 0)); // 시작점과 카운트한 횟수
+	vis[start] = 1;
+
+	while (!q.empty()) {
+
+		// 먼저 조건 완료 선언부
+		if (q.front().first == ed) {
+			res = q.front().second;
+			swc = 1; // 목표 지점에 도달하면 1, 못하면 0이 되어 -1을 출력시킴.
+			break;
+		}
+
+		int now = q.front().first;
+		int cnt = q.front().second;
+
+		q.pop();
+		for (int i = 1; now + (jump[now] * i) <= n; i++) {
+			int next = now + jump[now] * i;
+			if (vis[next] == 0) {
+				vis[next] = 1;
+				q.push(make_pair(next, cnt + 1));
+			}
+		}
+
+		for (int i = 1; now - (jump[now] * i) >= 1; i++) {
+			int next = now - jump[now] * i;
+			if (vis[next] == 0) {
+				vis[next] = 1;
+				q.push(make_pair(next, cnt + 1));
+			}
+		}
+	}
+	if (swc == 0) {
+		cout << -1;
+	}
+	else
+		cout << res;
+
+
+
+}
