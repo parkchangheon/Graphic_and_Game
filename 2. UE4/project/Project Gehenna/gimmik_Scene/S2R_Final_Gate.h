@@ -17,28 +17,34 @@ class TPS_C_PROJECT_API AS2R_Final_Gate : public AMaster_Interact
 
 public:
 	AS2R_Final_Gate();
-	virtual void BeginPlay() override;
-	virtual void Interact() override;
+	void BeginPlay();
+	void virtual Interact() override;
+	void OpenDoor();
+
+
+
 
 public:
 	UPROPERTY()
-	bool First_Pannel;
-
-	UPROPERTY()
-	bool Second_Pannel;
-
-	UPROPERTY()
-	bool Third_Pannel;
-
-	UPROPERTY()
 	bool Gate_Status;
 
-	class UStaticMeshComponent* Door;
+
+	class UStaticMeshComponent* Master_Gate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")	
 	class UStaticMeshComponent* Door_Right;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	class UStaticMeshComponent* Door_Left;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	class UStaticMeshComponent* Pannel1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	class UStaticMeshComponent* Pannel2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
 	class UStaticMeshComponent* Pannel3;
 
 };
