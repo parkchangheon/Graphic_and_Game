@@ -2,6 +2,8 @@
 
 
 #include "S2R_Final_PannelLever.h"
+#include "S2R_Second_Lever.h"
+
 
 
 AS2R_Final_PannelLever::AS2R_Final_PannelLever()
@@ -13,7 +15,7 @@ AS2R_Final_PannelLever::AS2R_Final_PannelLever()
 
 	Main_Body = CreateAbstractDefaultSubobject<USceneComponent>(TEXT("MainBody"));
 	Lever = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lever1"));
-
+	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("BOX"));
 
 
 	RootComponent = Main_Body;
@@ -24,6 +26,8 @@ AS2R_Final_PannelLever::AS2R_Final_PannelLever()
 	{
 		Lever->SetStaticMesh(LeverAsset.Object);
 	}
+
+
 }
 
 
