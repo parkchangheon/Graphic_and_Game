@@ -2,65 +2,50 @@
 
 
 #include "S2R_Second_Lever.h"
+#include "Components/BoxComponent.h"
+#include "GameFramework/Character.h"
 #include "Engine/Classes/Components/StaticMeshComponent.h"
 
 
 AS2R_Second_Lever::AS2R_Second_Lever()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	CountdownTime = 4;
-	isholding = false;
 
 	BoxMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxMesh"));
 	NPC_Lever = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lever"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>LeverNPC(TEXT("StaticMesh'/Game/MAP_CONTENTS/PCH_Direct12/Lever/SM_Lever.SM_Lever'"));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>Lever(TEXT("StaticMesh'/Game/MAP_CONTENTS/PCH_Direct12/Lever/SM_Lever.SM_Lever'"));
-
-	if (Lever.Succeeded())
+	if (LeverNPC.Succeeded())
 	{
-		NPC_Lever->SetStaticMesh(Lever.Object);
+		NPC_Lever->SetStaticMesh(LeverNPC.Object);
 	}
+
+	BoxMesh->OnComponentBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
 }
 
 
 void AS2R_Second_Lever::BeginPlay()
 {
 	Super::BeginPlay();
-
+	OnActorBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &AS2R_Second_Lever::OnOverlapEnd);
 }
 
-
-
-void AS2R_Second_Lever::StartTimer()
+void AS2R_Second_Lever::OnBeginOverlap(AActor* Overlapped, AActor* Other)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Timer Start"));
-	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AS2R_Second_Lever::AdvanceTimer, 1.0f, true);
-}
-
-
-void AS2R_Second_Lever::AdvanceTimer()
-{
-	--CountdownTime;
-	if (CountdownTime < 2 && CountdownTime>=1) //3초 지난 후,
+	ACharacter* NPC_Moon = Cast<ACharacter>(Other);
+	if (Other) // 다른 겹쳐진 것이 == NPC 문창섭일때.
 	{
-		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
-		CountdownHasFinished();
-
+		
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED"));
 }
 
 
 
-
-
-void AS2R_Second_Lever::CountdownHasFinished()
+void AS2R_Second_Lever::OnOverlapEnd(AActor* Overlapped, AActor* Other)
 {
-	UE_LOG(LogTemp,Warning, TEXT("Called!"));
-}
 
-
-void AS2R_Second_Lever::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
-{
-	UE_LOG(LogTemp, Log, TEXT("NotifyHit"));
 }
 
