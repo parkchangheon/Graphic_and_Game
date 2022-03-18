@@ -1,0 +1,98 @@
+//1157번
+
+//#include<iostream>
+//#include<string>
+//#include<vector>
+//#include<algorithm>
+//using namespace std;
+//
+//int main()
+//{
+//	string s;
+//	cin >> s;
+//	
+//	vector<char> ovl;
+//	int result=0;
+//	char res=' ';
+//	bool flag = true;
+//
+//	for (int i = 0; i < s.length(); i++)
+//	{
+//		s[i] = toupper(s[i]);
+//	}
+//
+//	for (int i = 0; i < s.length(); i++)
+//	{
+//		int tmp=0;
+//		char ctmp = s[i];
+//		for (int j = 0; j < s.length(); j++)
+//		{
+//			auto it = find(ovl.begin(), ovl.end(), ctmp);
+//			if (!(it == ovl.end())) {
+//				break; // 이미 있는 것이라면 탈출
+//			}
+//			if (ctmp == s[j])
+//				tmp++;
+//		}
+//		ovl.push_back(s[i]);
+//		if (tmp == result)
+//		{
+//			cout << "?";
+//			flag = false;
+//			break;
+//		}
+//		else if (tmp > result) {
+//			result = tmp;
+//			res = ctmp;
+//		}
+//			
+//		
+//	}
+//	if (flag)
+//		cout <<res;
+//}
+
+
+
+//숏코딩
+
+//#include<algorithm>
+//#include<iostream>
+//#include<string>
+//
+//using namespace std;
+//
+//int main()
+//{
+//	string c;
+//	cin >> c;
+//	transform(c.begin(), c.end(), c.begin(), (int(*)(int))toupper);
+//	
+//	int a[26] = { 0, };
+//	for (int i = 0; i < c.length(); i++)
+//	{
+//		a[c[i] - 'A']++;     //A~Z까지 0~26으로 환산하여 넣음
+//	}
+//
+//	int max = 0;
+//	int cnt = 0;
+//	int target;
+//
+//	for (int i = 0; i < 26; i++)
+//	{
+//		if (max < a[i]) //만약 max 갯수가 작다면!
+//		{
+//			max = a[i];
+//			cnt = 0;
+//			target = i;
+//		}
+//		if (max == a[i]) // 만약 갯수가 똑같다면 증가
+//			cnt++;
+//	}
+//
+//	if (cnt > 1) 
+//		cout << "?";
+//	else
+//		cout << (char)(target + 'A');
+//	return 0;
+//}
