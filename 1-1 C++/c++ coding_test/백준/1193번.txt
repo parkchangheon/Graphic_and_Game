@@ -1,0 +1,48 @@
+#include<iostream>
+using namespace std;
+
+int main()
+{
+	int x;
+	cin >> x;
+
+	int sum = 0;
+	int row;
+	int index;
+	int p,c;
+
+	for (int i = 1;; i++)
+	{
+		sum += i;
+		if (sum >= x)
+		{
+			row = i;
+			index = x - sum + i;
+			break;
+		}
+	}
+
+	if (row % 2 == 0) // 짝수번째 행일떄
+	{
+		p = 1;
+		c = row;
+		for (int i = 1; i < index; i++)
+		{
+			p += 1;
+			c -= 1;
+		}
+		cout << p << "/" << c;
+	}
+
+	else  //홀수번째 행일때
+	{
+		p = row;
+		c = 1;
+		for (int i = 1; i < index; i++)
+		{
+			p -= 1;
+			c += 1;
+		}
+		cout << p << "/" << c;
+	}
+}
