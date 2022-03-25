@@ -4,6 +4,7 @@
 #include "S2R_Second_Lever.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagsManager.h"
 #include "Engine/Classes/Components/StaticMeshComponent.h"
 
 
@@ -21,31 +22,55 @@ AS2R_Second_Lever::AS2R_Second_Lever()
 	}
 
 	BoxMesh->OnComponentBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
+	Box->OnComponentBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnCharacterOverlap);
+	IsMoonStand_Lever = false;
+	IsYoolStand_Lever = false;
 }
 
 
 void AS2R_Second_Lever::BeginPlay()
 {
 	Super::BeginPlay();
-	OnActorBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
-	OnActorEndOverlap.AddDynamic(this, &AS2R_Second_Lever::OnOverlapEnd);
+	//OnActorBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
+	//OnActorEndOverlap.AddDynamic(this, &AS2R_Second_Lever::OnOverlapEnd);
+
 }
 
-void AS2R_Second_Lever::OnBeginOverlap(AActor* Overlapped, AActor* Other)
-{
-	ACharacter* NPC_Moon = Cast<ACharacter>(Other);
-	if (Other) // 다른 겹쳐진 것이 == NPC 문창섭일때.
+void AS2R_Second_Lever::OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{   
+	if (OtherActor->ActorHasTag("NPC_Moon"))   // 문창섭 패널 앞에 있을때
 	{
-		
+		UE_LOG(LogTemp, Warning, TEXT("MoonOverlapped"));
+		IsMoonStand_Lever = true;
+	}
+	
+	
+}
+
+
+void AS2R_Second_Lever::OnCharacterOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag("PC"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LEEYOOL"));
+		IsYoolStand_Lever = true;
+	}
+}
+
+
+void AS2R_Second_Lever::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	IsMoonStand_Lever = false;
+	UE_LOG(LogTemp, Warning, TEXT("Exit"));
+}
+
+
+void AS2R_Second_Lever::OnCharacterEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		IsYoolStand_Lever = false;
+		UE_LOG(LogTemp, Warning, TEXT("Exit"));
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED"));
 }
-
-
-
-void AS2R_Second_Lever::OnOverlapEnd(AActor* Overlapped, AActor* Other)
-{
-
-}
-

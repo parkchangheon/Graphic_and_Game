@@ -13,6 +13,10 @@ UCLASS()
 class TPS_C_PROJECT_API AS2R_Second_Lever : public AS2R_Final_PannelLever
 {
 	GENERATED_BODY()
+
+private:
+	bool IsMoonStand_Lever;
+	bool IsYoolStand_Lever;
 	
 public:
 	AS2R_Second_Lever();
@@ -30,11 +34,18 @@ public:
 
 public:
 	UFUNCTION()
-	void OnBeginOverlap(AActor* Overlapped, AActor* Other);
+	void OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnOverlapEnd(AActor* Overlapped, AActor* Other);
+	void OnCharacterOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+	UFUNCTION()
+	void OnCharacterEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	FDelegateTriggerOVL DelegateTriggerOVL;
