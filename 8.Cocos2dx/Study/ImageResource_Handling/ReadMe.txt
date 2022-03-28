@@ -1,3 +1,6 @@
+
+========Appdelegate.cpp=========
+
 22_03_28
 
 1. Appdelegate는 앱의 기본 정보를 정의하는 클래스 파일이다.
@@ -41,4 +44,30 @@ NO_BORDER는 화면비를 유지하는 점에서 SHOW_ALL과 같지만, 빈공�
 리소스 참조에 쓰일 구조체 Resource를 정의하였다.
 
 //55
-해당 구조체를 활용하여, 작은 사이즈와 큰사이즈 구조체를 정의하고 
+해당 구조체를 활용하여, 작은 사이즈와 큰사이즈 구조체를 정의한다.
+
+
+
+
+
+
+============StartScene===========
+
+.h
+void menuCloseCallback => selector 콜백
+
+CREATE_FUNC(StartScene) => static create() 함수를 실행한다.
+
+
+
+.cpp
+sprite를 생성하여 씬에 이미지를 띄운다.
+auto back 변수를 생성하여 Sprite::create(""); ==> 이떄 파일은 resource에 넣어줄것
+
+#5-3까지함
+
+
+
+
+
+
