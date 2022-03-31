@@ -1,0 +1,61 @@
+auto 키워드 C++11 버점부터 사용가능한 키워드이다.
+auto 키워드를 사용하지 않아도 에러는 발생하지 않으나 사용하면 편하다.
+
+코드 자체가 간결해지는 장점이 있다.
+
+기존)
+Sprite *test = Sprite::create("test.png"); //Sprite 객체는 Sprite로 선언을 했어야 했다.
+auto test=Sprite:::create("test.png");로 바뀜
+
+하지만 
+auto test;
+test=Sprite:::create("test.png")는 불가능하다.
+
+
+
+
+노드
+노드는 Scene을 구성하는 기본 객체이다.
+cocos2d-x의 씬을 구성하는 대부분의 객체들은 이 노드를 상속받는다.
+예를 들어 화면을 구성하는 Sprite나 Layer 등 화면에 나타나야하는 클래스들이 이 Node를 상속받는다.
+
+create()
+노드나 액션 등 cocos2d-x에서 사용하는 대다수의 클래스를 생성하는 메서드이다.
+create()를 사용하여 객체를 생성하여 메모리 해제를 수동으로 해주지 않아도 된다.
+자동으로 메모리를 해제해주는 autorelease() 코드가 들어있기 때문!
+
+
+setPosition()
+노드의 위치를 지정해주는 메서드.
+노드마다 사용한다 ***** 중요
+setPosition은 point를 매개변수로 받으며, Point는 x,y 좌표를 갖는 것이 가능.
+좌측 하단이 (0,0)이고, 우측 상단이 (320,480)(예)
+
+
+setAnchorPoint()
+setAnchorPoint()는 앵커 포인트를 설정한다는 뜻이며, 앵커 포인트란 노드 화면에 표시될떄 기준이 되는 점을 말함.
+노드는 기본적으로 노드의 가운데를 기준으로 위치함.
+x,y 가 0~1 사이인 point를 매개변수로 받는다. point(0.5, 0.5)는 노드의 정중앙.
+대부분의 노드들이 (0.5,0.5)를 초기값으로 갖는다.
+Layer는 point(0,0)을 기본으로 갖는다. 
+
+우리가 코드에서 작성한 	back->setPosition(Point(winSize.width / 2, winSize.height / 2)); 은
+가운데 좌표를 구한것.
+
+
+addChild()
+virtual void addChild(Node *child);     //노드만 받는 경우. 해당 노드만 자식으로 추가
+virtual void addChild(Node *child, int localZOrder);    // Node와 ZOrder을 받는다. ZOrder을 입력하지 않은 경우, 나중에 추가된 자식이 위로 올라온다. 하지만 순서 조절 가능
+virtual void addChild(Node *child, int localZOrder, int tag);   //태그를 입력받는다.
+
+
+Get data from file(ErrorTest.png) failed
+
+위와 같은 에러가 나오면 해당 경로나 파일명이 잘못되진 않았는지 확인해봅시다.
+
+ 
+
+
+
+
+
