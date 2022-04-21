@@ -10,11 +10,10 @@ AS2R_Final_PannelLever::AS2R_Final_PannelLever()
 {
 
 	Pannel_Status = false;
-
-
+	flag = true;
 
 	Main_Body = CreateAbstractDefaultSubobject<USceneComponent>(TEXT("MainBody"));
-	Lever = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lever1"));
+	Lever = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Lever1")); 
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("BOX"));
 
 
@@ -34,6 +33,11 @@ AS2R_Final_PannelLever::AS2R_Final_PannelLever()
 
 void AS2R_Final_PannelLever::Interact()
 {
-	Pannel_Status = true;
 
+	if (flag) {
+		Pannel_Status = true;
+		UE_LOG(LogTemp, Warning, TEXT("We have Interact!!"));
+		flag = false;
+	}
+	
 }

@@ -9,7 +9,7 @@
 
 
 AS2R_Second_Lever::AS2R_Second_Lever()
-{
+{ 
 	PrimaryActorTick.bCanEverTick = false;
 
 	BoxMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxMesh"));
@@ -33,7 +33,6 @@ void AS2R_Second_Lever::BeginPlay()
 	Super::BeginPlay();
 	//OnActorBeginOverlap.AddDynamic(this, &AS2R_Second_Lever::OnBeginOverlap);
 	//OnActorEndOverlap.AddDynamic(this, &AS2R_Second_Lever::OnOverlapEnd);
-
 }
 
 void AS2R_Second_Lever::OnBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -55,54 +54,18 @@ void AS2R_Second_Lever::OnCharacterOverlap(class UPrimitiveComponent* Overlapped
 		UE_LOG(LogTemp, Warning, TEXT("LEEYOOL"));
 		IsYoolStand_Lever = true;
 
-
 		if (IsMoonStand_Lever && IsYoolStand_Lever)
 		{
 			//여기에 이율 조작+타이머 카운트 넣는다.
-			bool LeeYoolHolding = false; //이율 레버 잡고있는지 여부
-			char arr_timer[4] = { 'w','s','d','a' };
+			//answer;
+	
 
-			if (LeeYoolHolding) {
-				for (int i = 0; i < 4; i++) {
-					if (SecondLeverResult(arr_timer[i]))
-					{
-						
-					}
-					else {
-						i = 0;
-						continue;
-					}
-
-				}
-			}
-
-
-
-
-
-			
 		}
 
 	}
 }
-bool AS2R_Second_Lever::SecondLeverResult(char answer) {
-	// 입력을 받는다.
 
-	//대기시간
-	FTimerHandle shoutTimer;
-	float shoutwaitTime = 3;
-	char input;
-	GetWorld()->GetTimerManager().SetTimer(shoutTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			//인풋 넣는 함수 넣기.
-		}), shoutwaitTime, false);
 
-	if (input == answer)
-		return true;
-	else
-		return false;
-
-}
 
 
 
@@ -120,5 +83,16 @@ void AS2R_Second_Lever::OnCharacterEndOverlap(UPrimitiveComponent* OverlappedCom
 		IsYoolStand_Lever = false;
 		UE_LOG(LogTemp, Warning, TEXT("Exit"));
 	}
+
+}
+
+
+
+
+void AS2R_Second_Lever::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	Super::EndPlay(EndPlayReason);
+
+	//델리게이트 해제과정
+	Fuc_DeleSingle.Unbind(); // 정확히는 메모리 해제 함수. 해당 델리게이트에 바인드된 함수를 제거
 
 }
