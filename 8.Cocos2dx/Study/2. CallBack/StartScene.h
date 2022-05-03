@@ -4,23 +4,23 @@
 class StartScene : public cocos2d::Layer
 {
 public:
-	//cpp ¿¡´Â id °³³äÀÌ ¾ø´Ù => class instance pointer¸¦ ¹ÝÈ¯
+	//cpp ï¿½ï¿½ï¿½ï¿½ id ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ => class instance pointerï¿½ï¿½ ï¿½ï¿½È¯
 	static cocos2d::Scene* createScene();
 	virtual bool init();
 
 	//selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
 
-	CREATE_FUNC(StartScene); //¾À »ý¼º ÄÚµå¶ó º¸¸é µÈ´Ù
-	//create_func ¸ÞÅ©·Î´Â 
-	//Create_FUNC(HelloWorld); ·Î µî·ÏÀ» ÇÑ´Ù¸é, HelloWorld °´Ã¼¸¦ »ý¼ºÇÏ±âÀü¿¡
-	// HelloWorld* hello = HelloWorld::Create(); ¿Í °°Àº ÄÚµå·Î »ý¼º °¡´É
+	CREATE_FUNC(StartScene); //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È´ï¿½
+	//create_func ï¿½ï¿½Å©ï¿½Î´ï¿½ 
+	//Create_FUNC(HelloWorld); ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ´Ù¸ï¿½, HelloWorld ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½
+	// HelloWorld* hello = HelloWorld::Create(); ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	//¾ÀÀ» »ý¼ºÇÏ´Â °ÍÀº °£´ÜÇÏ´Ù
-	//auto myScene = Scene::create(); ·Î »ý¼º°¡´É
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½
+	//auto myScene = Scene::create(); ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-	//¹öÆ° Å¬¸¯ÇßÀ»¶§ ÄÝ¹éÇÔ¼ö ±¸Çö
+	//ï¿½ï¿½Æ° Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¹ï¿½ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½
 	void OnClickButton(Ref *object);
 };
 
