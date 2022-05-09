@@ -14,14 +14,17 @@ UCLASS()
 class TPS_C_PROJECT_API AS2R_Final_PannelLever : public AMaster_Interact
 {
 	GENERATED_BODY()
-	
 
+	
 
 public:
 	AS2R_Final_PannelLever();
 
 	UFUNCTION(BlueprintCallable)
 	void Interact();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool flag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Pannel_Status;
