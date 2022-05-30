@@ -42,3 +42,30 @@ int main()
 	}
 	cout << min0 + min1;
 }
+
+
+
+
+
+//#include<iostream>
+//#include<algorithm>
+//using namespace std;
+//
+//int N, n[200000] = {}, p, l_m = 1000000001, r_m = 1000000001;
+//int main() {
+//	ios::sync_with_stdio(false);
+//	cin.tie(0);
+//	cin >> N;
+//	
+//	for (int i = 0; i < N; i++) {
+//		cin >> n[i];
+//		if (n[i] == -1)
+//			p = i;
+//	}
+//
+//	for (int i = 0; i < p; i++)
+//		l_m = min(l_m, n[i]);
+//	for (int i = p + 1; i < N; i++)
+//		r_m = min(r_m, n[i]);
+//	cout << l_m + r_m;
+//}
