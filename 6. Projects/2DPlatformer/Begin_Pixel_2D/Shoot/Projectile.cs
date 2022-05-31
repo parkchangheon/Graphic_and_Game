@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float speed;
     private float direction;
     private bool Hit;
+    private float lifetime;
 
     private BoxCollider2D boxcollider;
     private Animator anim;
@@ -21,8 +22,10 @@ public class Projectile : MonoBehaviour
         if (Hit) return;
         float movementSpeed = speed * Time.deltaTime * direction;
         // 상대좌표를 기준으로 위치시킨다. 절대 좌표로 하고 싶을땐 .position을 사용함
-        transform.Translate(movementSpeed, 0, 0); 
+        transform.Translate(movementSpeed, 0, 0);
 
+        lifetime += Time.deltaTime;
+        if (lifetime > 3) gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision) // 오브젝트간 충돌이 일어날때 처음 한번만 호출
@@ -34,6 +37,7 @@ public class Projectile : MonoBehaviour
 
     public void SetDirection(float _direction)
     {
+        lifetime = 0;
         direction = _direction;
         gameObject.SetActive(true);
         Hit = false;

@@ -21,7 +21,7 @@ public class PlayerShooting: MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0) && cooldownTimer > shootCooldown && playerMovement.canShoot())
+        if (Input.GetMouseButton(0) && (cooldownTimer > shootCooldown) && playerMovement.canShoot())
             Shoot();
 
         cooldownTimer += Time.deltaTime;
@@ -40,7 +40,17 @@ public class PlayerShooting: MonoBehaviour
         // 게임에 필요한 오브젝트를 미리 생성해서 필요할때마다 꺼내쓰고, 끝나면 다시 풀에 돌려줌 
         // 파괴가 아닌 게임이 시작될떄 필요한만큼의 오브젝트만 생성하고 모자라면 추가 생성하고 끝나면 파괴하는 방식.
 
-        fireballs[0].transform.position = firePoint.position;
-        fireballs[0].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+        fireballs[FindFireball()].transform.position = firePoint.position;
+        fireballs[FindFireball()].GetComponent<Projectile>().SetDirection(Mathf.Sign(transform.localScale.x));
+    }
+
+    private int FindFireball() //deactivate 시켜준것 찾는 메소드
+    {
+        for(int i=0;i<fireballs.Length;i++)
+        {
+            if (!fireballs[i].activeInHierarchy)
+                return i;
+        }
+        return 0;
     }
 }
