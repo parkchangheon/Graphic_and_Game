@@ -4,16 +4,22 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    [Header("Health")]
     [SerializeField] private float startingHealth;
     public float currentHealth { get; private set;  } //get은 그 어떤 스크립트에서 해당 값을 받을 수 있다는 뜻이고, private set은 현재 스크립트에서만 set이 가능하다는 것.
     private Animator anim;
     private bool dead;
 
+    [Header("iFrames")]
+    [SerializeField] private float iFrameDuration;
+    [SerializeField] private int numberOfFlashes;
+    private SpriteRenderer spriteRend;
 
     private void Awake()
     {
         currentHealth = startingHealth;
         anim = GetComponent<Animator>();
+        spriteRend = GetComponent<SpriteRenderer>();
     }
 
     public void TakeDamage(float _damage)
@@ -24,6 +30,7 @@ public class Health : MonoBehaviour
         {
             //player hurt
             anim.SetTrigger("hurt");
+            StartCoroutine(Invunerability());
         }
         else
         {
@@ -45,4 +52,17 @@ public class Health : MonoBehaviour
 
     }
 
+    private IEnumerator Invunerability()
+    {
+        Physics2D.IgnoreLayerCollision(8, 9, true); // Layer 8,9는 서로 무시한다.
+        //iVunerability duration
+        for(int i=0; i<numberOfFlashes;i++)
+        {
+            spriteRend.color = new Color(1, 0, 0, 0.5f);  //피격시 색을 바꾸는 로직
+            yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));  //시간을 단축하는 로직
+            spriteRend.color = Color.white;
+            yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
+        }
+        Physics2D.IgnoreLayerCollision(8, 9, false);
+    }
 }
