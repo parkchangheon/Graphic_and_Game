@@ -27,7 +27,7 @@ public class EnemyPatrol : MonoBehaviour
         if (movingleft)
         {
             if (enemy.position.x >= leftEdge.position.x)
-                MoveInDirection(1);
+                MoveInDirection(-1);
             else
             {
                 //change direction
@@ -37,8 +37,8 @@ public class EnemyPatrol : MonoBehaviour
 
         else
         {
-            if(enemy.position.x <= leftEdge.position.x)
-                MoveInDirection(-1);
+            if(enemy.position.x <= rightEdge.position.x)
+                MoveInDirection(1);
             else
             {
                 //change direction
