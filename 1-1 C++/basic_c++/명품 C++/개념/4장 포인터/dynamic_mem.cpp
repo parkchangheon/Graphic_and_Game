@@ -6,7 +6,8 @@
 
 //new나 delete 연산자를 사용한다.
 
-//사용법
+//동적 할당 => 힙영역에 저장됨.
+
 
 //#include<iostream>
 //using namespace std;
@@ -54,24 +55,66 @@
 
 //}
 
+//#include<iostream>
+//using namespace std;
+//
+//
+//int main()
+//{
+//	int* p;
+//	
+//	p = new int;
+//	if (!p){
+//		cout << "메모리 할당 불가능.";
+//		return 0;
+//	}
+//
+//	*p = 5;
+//	int n = *p;
+//	cout << "*p = " << *p << endl;
+//	cout << "n = " << *p << endl;
+//
+//	delete p;
+//}
+
+class Circle {
+	int r;
+public:
+	Circle() {};
+	Circle(int r) {};
+};
+
+
+
+
+
+// 배열의 동적 할당 및 반환
+//자료형 *포인터변수 =  new 자료형[배열의 크기]
+//delete[] 포인터변수
 #include<iostream>
 using namespace std;
+int main() {
+
+	////배열의 초기화는 불가능하다.
+	////int* Array = new int[10](20);
+	//int* Array = new int[] { 10, 20, 30, 40 }; //하지만 이와같이 초기화는 가능하다.
+
+	//int *arr = new int[3];
+	//if (!arr)
+	//	return;
+
+	//for (int i = 0; i < 3; i++) {
+	//	cout << arr[i] << endl;
+	//}
+
+	//delete[] arr;
+
+	Circle* ArrCircle = new Circle;   //생성자 Circle() 호출
+	Circle* ArrCircle2 = new Circle(30); // 생성자 Cricle(30) 호출
+
+	delete ArrCircle;
+	delete ArrCircle2;
 
 
-int main()
-{
-	int* p;
 	
-	p = new int;
-	if (!p){
-		cout << "메모리 할당 불가능.";
-		return 0;
-	}
-
-	*p = 5;
-	int n = *p;
-	cout << "*p = " << *p << endl;
-	cout << "n = " << *p << endl;
-
-	delete p;
 }
