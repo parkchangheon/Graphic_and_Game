@@ -9,6 +9,10 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private float range;
     [SerializeField] private int damage;
 
+    [Header("Ranged Attack")]
+    [SerializeField] private Transform firepoint;
+    [SerializeField] private GameObject[] fireball;
+
     [Header("Collider Parameter")]
     [SerializeField] private float colliderDistance;
     [SerializeField] private BoxCollider2D boxCollider;
@@ -37,7 +41,7 @@ public class RangedEnemy : MonoBehaviour
             if(cooldownTimer >= attackCooldown)
             {
                 cooldownTimer = 0;
-                anim.SetTrigger("rangedAttack");
+                anim.SetTrigger("RangedAttack");
             }
         }
 
@@ -45,20 +49,40 @@ public class RangedEnemy : MonoBehaviour
             enemyPatrol.enabled = !PlayerInsight();
     }
 
+    private void RangedAttack()
+    {
+        cooldownTimer = 0;
+
+        //shoot projectile
+        fireball[FindFireball()].transform.position = firepoint.position;
+        fireball[FindFireball()].GetComponent<EnemyProjectile>().ActivateProjectile();
+    }
+
+    private int FindFireball()
+    {
+        for(int i=0;i<fireball.Length;i++)
+        {
+            if (!fireball[i].activeInHierarchy)
+                return i;
+        }
+        return 0;
+    }
 
     private bool PlayerInsight()
     {
-        // transform.right * range 는 빨간색 박스를 range만큼 움직이게 하기 위함이다.
-        // localScale.x를 한것은, 오른쪽 왼쪽일때, 플립을 해주기 위함.
         RaycastHit2D hit = Physics2D.BoxCast(boxCollider.bounds.center + -transform.right * range * transform.localScale.x * colliderDistance,
             new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z),
             0, Vector2.left, 0, playerLayer);   //origin, size, angle, direction
-        if (hit.collider != null)
-        {
-            
-        }
 
         return hit.collider != null;
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(boxCollider.bounds.center + -transform.right * range * transform.localScale.x * colliderDistance,
+            new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
     }
 
 }
