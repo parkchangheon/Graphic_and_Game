@@ -23,9 +23,16 @@ public:
 	// Sets default values for this character's properties
 	ATestCharacter();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
+	float TurnRateGamepad;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void MoveForward(float value);
+
+	void MoveRight(float value);
 
 public:	
 	// Called every frame
@@ -34,4 +41,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
