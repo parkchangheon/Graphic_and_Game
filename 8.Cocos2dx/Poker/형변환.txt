@@ -1,0 +1,15 @@
+static string toString<float>(float val)
+      {
+         unsigned short precision = 6;
+         unsigned short width = 0;
+         char fill = ' ';
+         std::ios::fmtflags flags = std::ios::fmtflags(0);
+         stringstream stream;
+         stream.precision(precision);
+         stream.width(width);
+         stream.fill(fill);
+         if (flags)
+            stream.setf(flags);
+         stream << val;
+         return stream.str();
+      }
