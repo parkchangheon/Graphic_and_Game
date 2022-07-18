@@ -15,6 +15,10 @@ public class Health : MonoBehaviour
     [SerializeField] private int numberOfFlashes;
     private SpriteRenderer spriteRend;
 
+    [Header("Components")]
+    [SerializeField]private Behaviour[] components;
+    private bool invulnerable;
+
     private void Awake()
     {
         currentHealth = startingHealth;
@@ -24,6 +28,7 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float _damage)
     {
+        if (invulnerable) return;
         currentHealth = Mathf.Clamp(currentHealth - _damage, 0, startingHealth);   // value, min, max로 구성되어 있으며, value가 min 보다 작으면 min을 리턴 max보다 크면 max 리턴
         
         if(currentHealth > 0)
@@ -39,7 +44,7 @@ public class Health : MonoBehaviour
             {
                 anim.SetTrigger("die");
 
-                //Player 
+/*                //Player 
                 if(GetComponent<PlayerMovement>() != null)
                     GetComponent<PlayerMovement>().enabled = false;
 
@@ -48,7 +53,13 @@ public class Health : MonoBehaviour
                      GetComponentInParent<EnemyPatrol>().enabled = false;
 
                 if (GetComponentInParent<MeleeEnemy>() != null)
-                    GetComponent<MeleeEnemy>().enabled = false;
+                    GetComponent<MeleeEnemy>().enabled = false;*/
+
+                foreach(Behaviour component in components)
+                {
+                    component.enabled = false;
+
+                }
 
                 dead = true;
             }
@@ -65,6 +76,7 @@ public class Health : MonoBehaviour
 
     private IEnumerator Invunerability()
     {
+        invulnerable = true;
         Physics2D.IgnoreLayerCollision(8, 9, true); // Layer 8,9는 서로 무시한다.
         //iVunerability duration
         for(int i=0; i<numberOfFlashes;i++)
@@ -75,5 +87,12 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
         }
         Physics2D.IgnoreLayerCollision(8, 9, false);
+        invulnerable = false;
+
+    }
+
+    private void Deactivate()
+    {
+        gameObject.SetActive(false);
     }
 }
