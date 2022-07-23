@@ -19,6 +19,15 @@ class PROJECTCHASER_API ATestCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 	
+//Ä³¸¯ÅÍ 
+protected:
+	UPROPERTY(VisibleAnywhere, Category = Character Parameter, meta = (AllowPrivateAccess = "true"))
+	float CharacterSpeed;
+	int RoundMoneyGain;
+	int FieldMoneyGain;
+	int FieldItemGain;
+	float FootPrintSound;
+
 public:
 	// Sets default values for this character's properties
 	ATestCharacter();
@@ -33,6 +42,8 @@ protected:
 	void MoveForward(float value);
 
 	void MoveRight(float value);
+	void TurnAtRate(float Rate);
+	void LookUpAtRate(float Rate);
 
 public:	
 	// Called every frame
