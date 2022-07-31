@@ -22,11 +22,11 @@ class PROJECTCHASER_API ATestCharacter : public ACharacter
 //캐릭터 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	float CharacterSpeed;
-	int RoundMoneyGain;
-	int FieldMoneyGain;
-	int FieldItemGain;
-	float FootPrintSound;
+	float CharacterSpeed;   // 이동속도
+	int RoundMoneyGain;     // 라운드 시작 재화 획득량
+	int FieldMoneyGain;     // 필드루팅 재화 획득량
+	int FieldItemGain;      // 필드루팅아이템 획득량
+	float FootPrintSound;   // 발자국 소리
 
 public:
 	// Sets default values for this character's properties
@@ -40,10 +40,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float value);
-
 	void MoveRight(float value);
-	void TurnAtRate(float Rate);
-	void LookUpAtRate(float Rate);
+	void Yaw(float value);
+	//void TurnAtRate(float Rate);
+	//void LookUpAtRate(float Rate);
 
 public:	
 	// Called every frame
@@ -52,8 +52,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	///** Returns CameraBoom subobject **/
+	//FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	///** Returns FollowCamera subobject **/
+	//FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
+
 };
