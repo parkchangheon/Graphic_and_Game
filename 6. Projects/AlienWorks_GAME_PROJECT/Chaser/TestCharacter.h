@@ -21,7 +21,7 @@ class PROJECTCHASER_API ATestCharacter : public ACharacter
 	
 //Ä³¸¯ÅÍ 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Character Parameter, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere)
 	float CharacterSpeed;
 	int RoundMoneyGain;
 	int FieldMoneyGain;
