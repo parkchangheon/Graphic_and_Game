@@ -16,6 +16,9 @@
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) 
 	#include "android/IapManager.h"
 #endif
+//NZ창헌 원스토어
+#include "android/IapManager.h"
+
 #include "W_PayReserveReq.pb.h"
 #include "W_PayReserveRes.pb.h"
 #include "CmdQueue.h"
@@ -44,12 +47,10 @@ LobbyShopPanel::LobbyShopPanel()
 	mCardListShopPanel = nullptr;
 	mModelTabPanel = nullptr;
 
-	
 	InitPanel();
 	InitImage();
 	initButton();	
 	setButtonListener(this);
-	
 
 	//unscheduleUpdate();
 
@@ -404,9 +405,9 @@ void LobbyShopPanel::onClicked(const string& name)
 		{
 			int _index = nxExtractInt(name, "RubyShopButton");
 			int32 _id = GameDataManager::getSingletonPtr()->GetGameDataPtr()->cashshopdata(_index).id();
-			//sendWPayReserveReq(_id);
+			sendWPayReserveReq(_id);
 
-			PanelHelper::pushSimpleConfirmPopupPanel("Protocol Is Developing", "Client Message");
+			//PanelHelper::pushSimpleConfirmPopupPanel("Protocol Is Developing", "Client Message");
 
 		}
 	}
@@ -825,7 +826,7 @@ void LobbyShopPanel::SetRubyShopList()
 	m_pShopListView = CCScrollView::create(_contentSize, m_pShopListContainer);
 	m_pShopListView->setDirection(extension::ScrollView::Direction::HORIZONTAL);
 	m_pShopListView->setBounceable(false);
-	//가장 상단으로 올리기.NZ창헌
+	//가장 상단으로 올리기.
 	m_pShopListView->setContentOffset(ccp(0, 0), false);
 
 	CCPoint _ListPos = m_RubyShopPanel->getDummy("dmy_scrollsize").origin;
@@ -1285,7 +1286,7 @@ void LobbyShopPanel::CreateRubyCell(int _size)
 		_MakeCellSize = SHOP_CELL_MAX;
 
 	for (int _i = 0; _i < _MakeCellSize; _i++)
-	{   //NZ창헌 루비 버튼
+	{
 		m_ListCell[_i] = new Panel();
 		m_ListCell[_i]->construct(getMxmlPath() + "dmy_goods_panel.mxml");
 		m_ListCell[_i]->setTag(-1);
@@ -1300,7 +1301,6 @@ void LobbyShopPanel::CreateRubyCell(int _size)
 		m_ListBtnCell[_i]->setPositionX(-buttonSize.width * 0.5f);
 		m_ListBtnCell[_i]->setPositionY(-DESIGN_HEIGHT + buttonSize.height * 0.5f);
 		m_ListCell[_i]->getImage("dmy_button_shop")->addChild(m_ListBtnCell[_i]);
-		
 		m_ListBtnCell[_i]->release();
 
 		m_ListBtnCell[_i]->getSkel("skel_icon")->setVisible(false);
@@ -1324,8 +1324,8 @@ void LobbyShopPanel::CreateRubyCell(int _size)
 			mBottomPos.x = mCenterPos.x;
 		}
 
-		
-		//NZ 창헌 패널 추가
+
+
 		Button* _pButton = m_ListBtnCell[_i]->getButton("sbtn_button");
 		_pButton->setTag(_i);
 		_pButton->setListener(this);
@@ -1545,7 +1545,7 @@ void LobbyShopPanel::InitMemberShipPanel()
 	refreshMemberShip();
 }
 
-void LobbyShopPanel::InitRubyShopPanel() //nz
+void LobbyShopPanel::InitRubyShopPanel()
 {
 	CCPoint _shop2Pos = getDummy("dmy_shopin2").origin;
 	_shop2Pos.y = -_shop2Pos.y;
@@ -1697,7 +1697,7 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 	Button* _pButton = m_ListBtnCell[_toIdx]->getButton("sbtn_button");
 	_pButton->setTag(_dstIdx);
 	_pButton->setName("RubyShopButton" + StringConverter::toString(_dstIdx));
-	//_pButton->setPaused(true);
+	//_pButton->setPaused(true); //NZ창헌 Solved_ruby_button
 
 	Nx::Label* middleName = m_ListCell[_toIdx]->getLabel("txt_gold_goods_center");
 
@@ -1772,7 +1772,7 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 
 	if (_pData.has_price())
 	{
-		//NZ창헌
+		
 		string _text = StringConverter::toString(_pData.price()) + GameStringDepot::getSingleton().getString("TXT_COUNT_MONEY");//U8(" 원");
 		m_ListBtnCell[_toIdx]->getLabel("txt_price1_under")->setString(_text.c_str());
 		m_ListBtnCell[_toIdx]->getLabel("txt_price1")->setString(_text.c_str());
@@ -1928,7 +1928,9 @@ void LobbyShopPanel::sendWPayReserveReq(int cashId)
 	else
 		req.set_markettype(Google);
 #else
-	req.set_markettype(Local);
+	//NZ창헌 원스토어 결제 setting 
+	//req.set_markettype(Local);
+	req.set_markettype(OneStore);
 #endif
 	req.set_paytype(ePayCash);
 	req.set_id(cashId);
@@ -1957,7 +1959,11 @@ void LobbyShopPanel::recvWPayReserveRes(HttpMessage* msg)
 			IapManager::getSingleton().launchPurchaseFlow(res.productid(), "", res.tid());
 		}		
 #else
-		//WebService::getSingletonPtr()->_sendCashBuyReq(mBuyCashId);
+		//NZ창헌 원스토어때문에 넣어줌 원래 없음
+		//if (IapManager::getSingleton().getPaymentType() == IapManager::ONE_STORE)
+		//	IapManager::getSingleton().sendPaymentRequest(res.productid(), "", res.tid());
+
+		WebService::getSingletonPtr()->_sendCashBuyReq(mBuyCashId);
 		STCMD_IAP_ONESTORE_REQUEST_RESULT iapRequestResult;
 		iapRequestResult.isSucess = true;
 		iapRequestResult.errMsg = "";
@@ -1969,7 +1975,7 @@ void LobbyShopPanel::recvWPayReserveRes(HttpMessage* msg)
 #endif // DEBUG
 
 		
-	}
+	} //게임 서버로부터 성공적으로 받아왔습니다~
 	else {
 		CCLog("W_PayReserveRes fail");
 		if (res.has_errorstring())
@@ -2142,6 +2148,7 @@ void LobbyShopPanel::initModelShopPanel()
 void LobbyShopPanel::onEnter()
 {
 	Panel::onEnter();
+
 	setTouchable(true);
 }
 
