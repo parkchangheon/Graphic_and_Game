@@ -8,6 +8,19 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+
+//캐릭터 상태
+enum CHARATER_STATE
+{
+	NORMAL_STATE,     //일반상태
+	SHOCK_STATE,      //감전상태
+	EXPOSED_STATE,    //노출상태
+	CLOAKING_STATE,  //은신상태
+	FAST_STATE,      //신속상태
+	ARRESTED_STATE   //체포상태
+};
+
+
 //////////////////////////////////////////////////////////////////////////
 // AProjectChaserCharacter
 
@@ -49,6 +62,9 @@ AProjectChaserCharacter::AProjectChaserCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	jumping = false;
+	jumpCount = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -63,6 +79,9 @@ void AProjectChaserCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AProjectChaserCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AProjectChaserCharacter::MoveRight);
+
+	//PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AProjectChaserCharacter::StartCrouch);
+	//PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AProjectChaserCharacter::StopCrouch);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -98,6 +117,50 @@ void AProjectChaserCharacter::LookUpAtRate(float Rate)
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
+
+void AProjectChaserCharacter::Landed(const FHitResult& Hit) { //참조형식
+	Super::Landed(Hit);
+
+	jumpCount = 0;
+}
+
+void AProjectChaserCharacter::CheckJump()
+{
+	if (jumping)
+		jumping = false;
+
+	else {
+		jumping = true;
+		jumpCount++;
+		if (jumpCount == 2)
+		{
+			LaunchCharacter(FVector(0, 0, 500), false,true);
+		}
+	}
+		
+}
+
+//void AProjectChaserCharacter::StartCrouch()
+//{
+//	
+//	//if (!GetCharacterMovement()->IsCrouching())
+//	//{
+//	//	UE_LOG(LogTemp, Log, TEXT("Crouch has Started"));
+//	//	GetCharacterMovement()->bWantsToCrouch = true;  //if true, try to crouch( or keep crouch ) on next update
+//	//	GetCharacterMovement()->Crouch();
+//	//}
+//}
+
+//void AProjectChaserCharacter::StopCrouch()
+//{
+//	
+//	/*if (GetCharacterMovement()->IsCrouching())
+//	{
+//		UE_LOG(LogTemp, Log, TEXT("Crouch has Stopped"));
+//		GetCharacterMovement()->bWantsToCrouch = false;
+//		GetCharacterMovement()->UnCrouch();
+//	}*/
+//}
 
 void AProjectChaserCharacter::MoveForward(float Value)
 {
