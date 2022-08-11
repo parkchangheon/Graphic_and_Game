@@ -6675,7 +6675,24 @@ void GameRoomInfo::ShowLastTableEffect()
 	PokerTopPanel* _pTopPanel = GetTopPanel();
 	if (_pTopPanel)
 	{
-		_pTopPanel->runAction(CCSequence::create(
+		//NZ창헌 - 마지막 라운드 커튼 쳐지는 것 확인
+		if (m_pStayPopup)
+		{
+			m_pStayPopup->closePanel();
+		}
+		m_pStayPopup = nullptr;
+
+		m_pStayPopup = new TournamentWaitingPanel();
+		LayerManager::getSingleton().pushDynamicLayer(m_pStayPopup, DYNAMIC_PUSH_LAYER);
+		m_pStayPopup->setDesc("파이널 라운드 방 배정.");
+		CCDelayTime::create(2.5f); //보이는 시간.
+		//NZ창헌 화면 끄는 메소드
+		if (m_pStayPopup)
+		{
+			m_pStayPopup->closePanel();
+		}
+		
+		/*_pTopPanel->runAction(CCSequence::create(
 			CCCallFunc::create(_pTopPanel, callfunc_selector(PokerTopPanel::ShowCurtainClose)),
 			CCDelayTime::create(0.5f),
 			CCCallFunc::create(_pTopPanel, callfunc_selector(PokerTopPanel::SetCutainClose)),
@@ -6684,7 +6701,7 @@ void GameRoomInfo::ShowLastTableEffect()
 			CCCallFunc::create(_pTopPanel, callfunc_selector(PokerTopPanel::ShowCurtainOpen)),
 			CCDelayTime::create(0.5f),
 			CCCallFunc::create(_pTopPanel, callfunc_selector(PokerTopPanel::SetCutainOpen)),
-			NULL));
+			NULL));*/
 	}
 }
 
