@@ -63,7 +63,6 @@ AProjectChaserCharacter::AProjectChaserCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	jumping = false;
 	jumpCount = 0;
 }
 
@@ -76,6 +75,7 @@ void AProjectChaserCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("JumpCheck", IE_Pressed, this, &AProjectChaserCharacter::CheckJump);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AProjectChaserCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AProjectChaserCharacter::MoveRight);
@@ -118,49 +118,29 @@ void AProjectChaserCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
-void AProjectChaserCharacter::Landed(const FHitResult& Hit) { //참조형식
-	Super::Landed(Hit);
-
-	jumpCount = 0;
-}
 
 void AProjectChaserCharacter::CheckJump()
 {
-	if (jumping)
-		jumping = false;
-
-	else {
-		jumping = true;
-		jumpCount++;
-		if (jumpCount == 2)
-		{
-			LaunchCharacter(FVector(0, 0, 500), false,true);
-		}
-	}
+	ACharacter::CheckJumpInput(GetWorld()->GetDeltaSeconds());
+	UE_LOG(LogTemp, Warning, TEXT("Jump Check"));
 		
+	if (bPressedJump)
+	{
+		jumpCount += 1;
+		if (jumpCount < 2)
+			UE_LOG(LogTemp, Warning, TEXT("Can Double Jump"))
+
+		else if (jumpCount >= 2)
+			resetJump();
+	}
 }
 
-//void AProjectChaserCharacter::StartCrouch()
-//{
-//	
-//	//if (!GetCharacterMovement()->IsCrouching())
-//	//{
-//	//	UE_LOG(LogTemp, Log, TEXT("Crouch has Started"));
-//	//	GetCharacterMovement()->bWantsToCrouch = true;  //if true, try to crouch( or keep crouch ) on next update
-//	//	GetCharacterMovement()->Crouch();
-//	//}
-//}
+void AProjectChaserCharacter::resetJump()
+{
+	jumpCount = 0;
+	UE_LOG(LogTemp, Warning, TEXT("Jump Has reset!"));
+}
 
-//void AProjectChaserCharacter::StopCrouch()
-//{
-//	
-//	/*if (GetCharacterMovement()->IsCrouching())
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("Crouch has Stopped"));
-//		GetCharacterMovement()->bWantsToCrouch = false;
-//		GetCharacterMovement()->UnCrouch();
-//	}*/
-//}
 
 void AProjectChaserCharacter::MoveForward(float Value)
 {
