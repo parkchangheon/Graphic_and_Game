@@ -29,7 +29,6 @@ AProjectChaserCharacter::AProjectChaserCharacter()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// set our turn rate for input
 	TurnRateGamepad = 50.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
@@ -64,6 +63,7 @@ AProjectChaserCharacter::AProjectChaserCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	jumpCount = 0;
+	jumping = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -73,9 +73,11 @@ void AProjectChaserCharacter::SetupPlayerInputComponent(class UInputComponent* P
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("JumpCheck", IE_Pressed, this, &AProjectChaserCharacter::CheckJump);
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AProjectChaserCharacter::CheckJump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AProjectChaserCharacter::CheckJump);
+
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AProjectChaserCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AProjectChaserCharacter::MoveRight);
@@ -118,29 +120,42 @@ void AProjectChaserCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
+//void AProjectChaserCharacter::Tick(float deltaTime)
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("Tick"));
+//	Super::Tick(deltaTime);
+//	if (jumping)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("Tick Jump"));
+//		Jump();
+//	}
+//}
+
 
 void AProjectChaserCharacter::CheckJump()
 {
-	ACharacter::CheckJumpInput(GetWorld()->GetDeltaSeconds());
-	UE_LOG(LogTemp, Warning, TEXT("Jump Check"));
-		
-	if (bPressedJump)
-	{
-		jumpCount += 1;
-		if (jumpCount < 2)
-			UE_LOG(LogTemp, Warning, TEXT("Can Double Jump"))
-
-		else if (jumpCount >= 2)
-			resetJump();
+	UE_LOG(LogTemp, Warning, TEXT("press Jump"));
+	if (jumping){
+		UE_LOG(LogTemp, Warning, TEXT("now Jump"));
+		jumping = false;
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("not Jump"));
+		Jump();
+		jumping = true;
+		jumpCount++;
+		if (jumpCount == 2)
+		{
+			LaunchCharacter(FVector(0, 0, 500), false, true);
+		}
 	}
 }
 
-void AProjectChaserCharacter::resetJump()
+void AProjectChaserCharacter::Landed(const FHitResult& Hit)
 {
+	Super::Landed(Hit);
 	jumpCount = 0;
-	UE_LOG(LogTemp, Warning, TEXT("Jump Has reset!"));
 }
-
 
 void AProjectChaserCharacter::MoveForward(float Value)
 {

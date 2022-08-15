@@ -25,6 +25,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
 
+
 protected:
 
 	/** Called for forwards/backward input */
@@ -45,11 +46,36 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	void Tick(float deltaTime);
+
+
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+	//void StartCrouch();
+	//void StopCrouch();
+
+	void CheckJump();
+	virtual void Landed(const FHitResult& Hit)override;
+
+private:
+	UPROPERTY()
+	bool jumping;
+
+	UPROPERTY()
+	int jumpCount;
+
+	//Ä³¸¯ÅÍ 
+protected:
+	UPROPERTY(VisibleAnywhere)
+	float CharacterSpeed;
+	int RoundMoneyGain;
+	int FieldMoneyGain;
+	int FieldItemGain;
+	float FootPrintSound;
+
 
 protected:
 	// APawn interface
