@@ -78,6 +78,11 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	private Set<String> mTokenToBe;
 	private boolean isServiceConnected;
 
+	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String txid , String receipt);
+	/*public static native String CallPurchaseStart(String pid);*/
+
+	private static String OverPID;
+
 	public static Object instance() {
 		System.out.println("instance 1");
 		getActivity().runOnUiThread(new Runnable() {
@@ -87,10 +92,15 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 					iapMgr = new IapManager(getActivity());
 				}
 				System.out.println("instance 3");
-
 			}
 		});
-		return iapMgr;
+
+		while(true) {
+			System.out.println("instance 4");
+			if (iapMgr != null)
+				return iapMgr;
+		}
+
 	}
 
 	public IapManager(@NonNull Activity activity) {
@@ -124,13 +134,12 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 					isServiceConnected = true;
 					//여기에 결제 요청 붙여보자
 					/*showBuyProductDialog();*/
-					queryProductDetailsAsync();
 
-
-					if (executeOnSuccess != null) {
+/*					if (executeOnSuccess != null) {
 						executeOnSuccess.run();
-					}
+					}*/
 
+					queryProductDetailsAsync();
 					return;
 				}
 
@@ -150,7 +159,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		});
 	}
 
-	//여기까지 진행이 완료됨
+
 	public void onPurchaseClientSetupFinished() {
 		iapMgr.getStoreCode(new StoreInfoListener() {
 			@Override
@@ -172,58 +181,73 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		}
 	}
 
-
-
 	private void queryProductDetailsAsync()
 	{
-		Log.d(TAG, "I am Setting query_ProductDetailsAsync");
-
 		List<String> strList = new ArrayList<>();
 		strList.add("m_ruby_01");
 		strList.add("ruby_01");
-
 		ProductDetailsParams params = ProductDetailsParams.newBuilder()
-				.setProductIdList(strList).setProductType(PurchaseClient.ProductType.ALL).build();
-		Log.d(TAG, "I am Setting query_ProductDetailsAsync2222222");
+				.setProductIdList(strList)
+				.setProductType(PurchaseClient.ProductType.INAPP)
+				.build();
 
 
-		//여기가문제  저기서 받아와야하는데 못받아온다.
+		//여기가문제 데이터 리스트 보내주고 콜백으로 받아와야하는데, 못받아온다.  ==>해결
 		mPurchaseClient.queryProductDetailsAsync(params, new ProductDetailsListener(){
 			@Override
 			public void onProductDetailsResponse(IapResult iapResult, @Nullable List<ProductDetail> list) {
-				Log.e(TAG, "I am Setting query_ProductDetailsAsync333333333");
+				Log.d(TAG, iapResult.toJsonString());
+				/*buyProduct(list.get(1).getProductId());*/  //이부분에서 저 id 값을 클릭한 값으로 받아오는걸 한번 구현해야한다.
+				Log.d(TAG, " iam in the queryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsync ");
 
-				if(iapResult.isSuccess() && list != null){
-					for(ProductDetail skuDetail : list){
-						Log.d(TAG, "ProductDetail = " + skuDetail.toString());
+				for(String value : strList)
+				{
+					Log.d(TAG, " value : strList value : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strList ");
+					if(value == OverPID)
+					{
+						Log.d(TAG, " value == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPID ");
+						String devPayload = generatePayload();
+						ProductDetail sku = getSkuDetail(value);
+
+						PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
+								.setProductId(value)
+								.setProductType(PurchaseClient.ProductType.INAPP)
+								.setDeveloperPayload(devPayload)
+								.setPromotionApplicable(false)
+								.build();
+						launchPurchaseFlow(params);
 					}
-				}else{
-					Log.d(TAG, iapResult.toJsonString());
 				}
+
 			}
 		});
 	}
 
 
-	private void buyProduct(final String productId, @PurchaseClient.ProductType String productType) {
-		Log.d(TAG, "buyProduct() - productId:" + productId + " productType: " + productType);
 
-		String devPayload = AppSecurity.generatePayload();
-		ProductDetail sku = getSkuDetail(productId);
+	private void buyProduct(final String productId) {
+		Log.d(TAG, " I Am in buy product method!!!! ");
+		Log.d(TAG, "buyProduct() - productId:" + productId + " productType: " );
+
+/*		String devPayload = generatePayload();
+		ProductDetail sku = getSkuDetail(productId);*/
+
+		OverPID = productId;
+		//PID 값 세팅을 여기서 해준다.
 
 
-		savePayloadString(devPayload);
-		showProgressDialog();
-
-		PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
+/*		savePayloadString(devPayload);
+		showProgressDialog();*/
+		//Log.d(TAG, " I Am in buy product method33333333333333333333333 ");
+		/*PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
 				.setProductId(productId)
-				.setProductType(productType)
+				.setProductType(PurchaseClient.ProductType.INAPP)
 				.setDeveloperPayload(devPayload)
 				.setPromotionApplicable(false)
 				.build();
-
-		launchPurchaseFlow(params);
+		launchPurchaseFlow(params);*/
 	}
+
 
 	private ProductDetail getSkuDetail(String pid) {
 		for(ProductDetail item : skuDetailsList) {
@@ -264,18 +288,38 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	// =================================================================================================================
 	// implements PurchasesUpdatedListener
 	// =================================================================================================================
+
+	@Override
+	public void onPurchasesUpdated(IapResult iapResult, @Nullable List<PurchaseData> list) {
+		Log.d(TAG, "=========================== Now I am in onPurchasesUpdated ===========================");
+		if(iapResult.isSuccess() && list != null) {
+			for(PurchaseData purchase : list){
+				consumeAsync(purchase);
+				Log.d(TAG, "=========================== Now I am in onPurchasesUpdated 2222===========================");
+			}
+		}else if(iapResult.getResponseCode() == PurchaseClient.ResponseCode.RESULT_USER_CANCELED){
+			Log.d(TAG, "=========================== Now I am in onPurchasesUpdated3333 ===========================");
+			Log.d(TAG, iapResult.toJsonString());
+		}else {
+			Log.d(TAG, "=========================== Now I am in onPurchasesUpdated4444 ===========================");
+			Log.d(TAG, iapResult.toJsonString());
+		}
+	}
+
+/*
 	@Override
 	public void onPurchasesUpdated(IapResult iapResult, List<PurchaseData> purchaseData) {
 		if (iapResult.isSuccess()) {
 			Log.e(TAG, "onpurchasesupdated");
-/*
+
 			onPurchaseUpdated(purchaseData);
-*/
+
 			return;
 		}
 
 		handleErrorCode(iapResult);
 	}
+*/
 
 	public void launchLoginFlow(IapResultListener listener) {
 		mPurchaseClient.launchLoginFlowAsync(mActivity, listener);
@@ -287,10 +331,14 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 
 
 	public void launchPurchaseFlow(final PurchaseFlowParams params) {
+		Log.e(TAG, "Before going in run purchase flow");
 		executeServiceRequest(new Runnable() {
 			@Override
 			public void run() {
+				Log.e(TAG, "ready to run purchase flow");
 				mPurchaseClient.launchPurchaseFlow(mActivity, params);
+				Log.e(TAG, "After run purchase flow");
+
 			}
 		});
 	}
@@ -369,6 +417,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	}
 
 	public void consumeAsync(final PurchaseData data) {
+		Log.i(TAG, "inside consumeAsyncconsumeAsyncconsumeAsyncconsumeAsync");
 		if (mTokenToBe == null) {
 			mTokenToBe = new HashSet<>();
 		} else if (mTokenToBe.contains(data.getPurchaseToken())) {
@@ -381,7 +430,10 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		executeServiceRequest(new Runnable() {
 			@Override
 			public void run() {
-				ConsumeParams params = ConsumeParams.newBuilder().setPurchaseData(data).build();
+				ConsumeParams params = ConsumeParams.newBuilder()
+						.setPurchaseData(data)
+						.build();
+
 				mPurchaseClient.consumeAsync(params, new ConsumeListener() {
 					@Override
 					public void onConsumeResponse(IapResult iapResult, PurchaseData purchaseData) {
@@ -399,6 +451,26 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 				});
 			}
 		});
+	}
+
+	public void onConsumeFinished(PurchaseData purchaseData, IapResult iapResult) {
+
+		Log.e(TAG, "onConsumeFinishedonConsumeFinishedonConsumeFinishedonConsumeFinished");
+		if (iapResult.isSuccess()) {
+			updateCoinsPurchased(purchaseData.getProductId());
+			Spanned message = Html.fromHtml(
+					String.format("asd", getPurchasedCoins(purchaseData.getProductId()))
+			);
+			/*showDialog(message);*/
+
+			//여기에 acknowledgeasync를 불러야하나?
+			//아니면 pid 값이랑 토큰값을 전달해야하나???????
+
+			Log.e(TAG, "@@@@@@"+purchaseData.getProductId()+"@@@@@@@"+purchaseData.getPurchaseToken()+"@@@@@@");
+
+		} else {
+			showDialog(iapResult.getMessage());
+		}
 	}
 
 	public void acknowledgeAsync(final PurchaseData data) {
@@ -421,6 +493,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 						if (iapResult.isSuccess()) {
 							if (data.getPurchaseToken().equals(purchaseData.getPurchaseToken())) {
 								mTokenToBe.remove(data.getPurchaseToken());
+
 								onAcknowledgeFinished(purchaseData, iapResult);
 							} else {
 								onError("purchaseToken not equal");
@@ -437,19 +510,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		Log.e(TAG, "onAcknowledgeFinished in come");
 	}
 
-	public void onConsumeFinished(PurchaseData purchaseData, IapResult iapResult) {
 
-
-		if (iapResult.isSuccess()) {
-			updateCoinsPurchased(purchaseData.getProductId());
-			Spanned message = Html.fromHtml(
-					String.format("asd", getPurchasedCoins(purchaseData.getProductId()))
-			);
-			showDialog(message);
-		} else {
-			showDialog(iapResult.getMessage());
-		}
-	}
 
 	/**
 	 * TODO: 개발사에서는 소비되지 않는 관리형상품(inapp)에 대해, 애플리케이션의 적절한 life cycle 에 맞춰 구매내역조회를 진행 후 소비를 진행해야합니다.
@@ -487,6 +548,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 						}
 
 						onPurchasesUpdated(iapResult, result);
+						Log.d(TAG, "============AFTER            queryPurchasesAsync============");
 					}
 				});
 			}
@@ -567,10 +629,10 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	private void showProgressDialog() {
 		Log.e(TAG,"ShowProgressDialog");
 		if (!isFinishing() && !isShowingProgressDialog()) {
-			/*if (mProgressDialog == null) {
+			if (mProgressDialog == null) {
 				Log.e(TAG,"ShowProgressDialog NULL");
 				mProgressDialog = new ProgressDialog(this);
-			}*/
+			}
 			mProgressDialog.setMessage("Service connection...");
 			mProgressDialog.show();
 		}
