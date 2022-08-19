@@ -6,10 +6,13 @@
 #include "SimplePopupPanel.h"
 #include "W_PayReserveReq.pb.h"
 #include "W_PayReserveRes.pb.h"
+#include "base/CCScheduler.h"
+#include "../Game/PlayerData.h"
+#include "../Game/GameDataManager.h"
 
 template<> IapManager* Nx::Singleton<IapManager>::msSingleton = 0;
 
-struct IapManagerObject
+struct IapManagerObject //¿Ö¾²´ÂÁö ¸ð¸§ 
 {
 	JNIEnv* env;
 	jobject object;
@@ -17,7 +20,7 @@ struct IapManagerObject
 	IapManagerObject() {
 		JniMethodInfo t;
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-		if (JniHelper::getStaticMethodInfo(t, IAP_JAVA_OBJECT, "instance", "()Ljava/lang/Object;"))
+		if (JniHelper::getStaticMethodInfo(t, IAP_JAVA_OBJECT, "instance", "()Ljava/lang/Object;"))    //instanceÀÎµ¥ IapManager·Î ¹Ù²ãÁÜ
 		{
 			env = t.env;
 			object = env->CallStaticObjectMethod(t.classID, t.methodID);
@@ -113,40 +116,54 @@ void IapManager::setDevelopMode(bool delvopmode)
 	CCLog("IapManager::setDevelopMode 3");
 }
 
-
-//NZÃ¢ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» from recv
-void IapManager::sendPaymentRequest(string productId, string produceName , string tID)
+//¿ø½ºÅä¾î·Î º¸³»´Â °áÁ¦ ¿äÃ»
+void IapManager::sendPaymentRequest(std::string productId, std::string produceName , std::string tID)
 {
+	
 	CCLog("IapManager::sendPaymentRequest productId = %s , tid = %s" , productId.c_str() , tID.c_str());
 	IapManagerObject obj;
 	if (!obj.getObject())
 		return;
 
+	CCLog("IapManager::sendPaymentRequest 1");
+
+	//µô·¹ÀÌ °ªÀ» ÁÖ·Á°í ÇÏ´Â°ÍÀÎµ¥ À§ÇèÇÏ´Ù
+	int a = 0;
+	for (int i = 0; i < 30000; i++) { //1ÁßÃ¸ for¹®
+		for (int j = 0; j < 30000; j++) { //2ÁßÃ¸ for¹®
+			a++;
+		}
+
+	}
+
 	CCLog("IapManager::sendPaymentRequest 2");
 	JniMethodInfo t;
-	if (JniHelper::getMethodInfo(t, IAP_JAVA_OBJECT, "sendPaymentRequest", "(ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")) {
+	
+	//NZÃ¢Çå - sendpaymentrequest º¯°æ -> buyProduct
+	if (JniHelper::getMethodInfo(t, IAP_JAVA_OBJECT, "buyProduct", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")) {
 		CCLog("IapManager::sendPaymentRequest 3");
 		jstring jproductId = t.env->NewStringUTF(productId.c_str());
 		jstring jproduceName = t.env->NewStringUTF(produceName.c_str());
 		jstring jproductTid = t.env->NewStringUTF(tID.c_str());
-		t.env->CallVoidMethod(obj.getObject(), t.methodID, true, jproductId, jproduceName, jproductTid);
+		t.env->CallVoidMethod(obj.getObject(), t.methodID, jproductId, jproduceName, jproductTid);
+		//t.env->CallVoidMethod(obj.getObject(), t.methodID, true, jproductId, jproduceName, jproductTid);
 		t.env->DeleteLocalRef(t.classID);
 		t.env->DeleteLocalRef(jproductId);
 		t.env->DeleteLocalRef(jproduceName);
 		t.env->DeleteLocalRef(jproductTid);
 	}
-	CCLog("IapManager::sendPaymentRequest 4");
 }
 
-void IapManager::onOneStorePurchaseRequestResult(bool isSucess, string errMsg, string tid ,  string txid, string receipt)
+void IapManager::onOneStorePurchaseRequestResult(bool isSucess, string errMsg, string tid , string receipt)
 {
+	CCLog("onOneStorePurchaseRequestResultonOneStorePurchaseRequestResultonOneStorePurchaseRequestResultonOneStorePurchaseRequestResult");
 	STCMD_IAP_ONESTORE_REQUEST_RESULT iapRequestResult;
 	iapRequestResult.isSucess = isSucess;
 	iapRequestResult.errMsg = errMsg;
 	iapRequestResult.tid = tid;
-	iapRequestResult.txid = txid;
+	iapRequestResult.txid = "";
 	iapRequestResult.receipt = receipt;
-	CCLog("IapManager::onRequestResult isSucess = %d , tid = %s , txid = %s , receipt = %s", isSucess , tid.c_str(), txid.c_str(), receipt.c_str());
+	CCLog("IapManager::onRequestResult isSucess = %d , tid = %s , receipt = %s", isSucess , tid.c_str(), receipt.c_str());
 	CCmdQueue::getSingleton().pushQueue(iapRequestResult);
 }
 
@@ -228,3 +245,6 @@ void IapManager::onGoogleStoreCheckPurchaseRequestResult(bool isSucess, string i
 	CCLog("IapManager::onRequestResult tid = %s , txid = %s , receipt = %s", tid.c_str(), orderId.c_str(), purchaseToken.c_str());
 	CCmdQueue::getSingleton().pushQueue(iapRequestResult);
 }
+
+
+

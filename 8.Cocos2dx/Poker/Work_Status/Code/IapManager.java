@@ -27,6 +27,7 @@ import com.gaa.sdk.iap.StoreInfoListener;
 
 
 import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.newzensoft.pfutil.ToSendResult;
 import com.newzensoft.poker.R;
 import com.numixent.inApp.helper.ConverterFactory;
 import com.numixent.inApp.helper.ParamsBuilder;
@@ -46,6 +47,7 @@ import android.content.pm.PackageManager;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -55,7 +57,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,7 +70,18 @@ import java.util.Random;
 import java.util.Set;
 
 
-public final class IapManager extends AppCompatActivity implements PurchasesUpdatedListener {
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+
+
+
+
+
+public class IapManager extends AppCompatActivity implements PurchasesUpdatedListener {
 
 	private final String TAG = IapManager.class.getSimpleName();
 	private List<ProductDetail> skuDetailsList = new ArrayList<>();
@@ -73,15 +89,20 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	private Activity mActivity;
 	private PurchaseClient mPurchaseClient;
 	private ProgressDialog mProgressDialog;
+	public ToSendResult mTosendResult;
 	private static IapManager iapMgr = null;
 
 	private Set<String> mTokenToBe;
 	private boolean isServiceConnected;
 
-	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String txid , String receipt);
+	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String ToServToken);
 	/*public static native String CallPurchaseStart(String pid);*/
 
-	private static String OverPID;
+	private static String ToServTID ="";
+	private static String GProducerName="";
+	public String url = "";
+	public String data = "";
+
 
 	public static Object instance() {
 		System.out.println("instance 1");
@@ -104,6 +125,8 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	}
 
 	public IapManager(@NonNull Activity activity) {
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
 		mActivity = activity;
 
 		mPurchaseClient = PurchaseClient.newBuilder(activity)
@@ -186,6 +209,17 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		List<String> strList = new ArrayList<>();
 		strList.add("m_ruby_01");
 		strList.add("ruby_01");
+		strList.add("ruby_02");
+		strList.add("ruby_03");
+		strList.add("ruby_04");
+		strList.add("ruby_05");
+		strList.add("jackpot_01");
+		strList.add("jackpot_02");
+		strList.add("made_01");
+		strList.add("made_02");
+		strList.add("allin_01");
+		strList.add("allin_02");
+		strList.add("onetime_01");
 		ProductDetailsParams params = ProductDetailsParams.newBuilder()
 				.setProductIdList(strList)
 				.setProductType(PurchaseClient.ProductType.INAPP)
@@ -200,52 +234,33 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 				/*buyProduct(list.get(1).getProductId());*/  //이부분에서 저 id 값을 클릭한 값으로 받아오는걸 한번 구현해야한다.
 				Log.d(TAG, " iam in the queryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsync ");
 
-				for(String value : strList)
-				{
-					Log.d(TAG, " value : strList value : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strListvalue : strList ");
-					if(value == OverPID)
-					{
-						Log.d(TAG, " value == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPIDvalue == OverPID ");
-						String devPayload = generatePayload();
-						ProductDetail sku = getSkuDetail(value);
-
-						PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
-								.setProductId(value)
-								.setProductType(PurchaseClient.ProductType.INAPP)
-								.setDeveloperPayload(devPayload)
-								.setPromotionApplicable(false)
-								.build();
-						launchPurchaseFlow(params);
-					}
-				}
-
 			}
 		});
 	}
 
 
 
-	private void buyProduct(final String productId) {
+	private void buyProduct(final String productId,final String ProducerName, final String productTid) {
+		ToServTID = productTid;
+		GProducerName = ProducerName;
 		Log.d(TAG, " I Am in buy product method!!!! ");
-		Log.d(TAG, "buyProduct() - productId:" + productId + " productType: " );
+		Log.d(TAG, "buyProduct() - productId:" + productId + " ProducerName " + ProducerName);
 
-/*		String devPayload = generatePayload();
-		ProductDetail sku = getSkuDetail(productId);*/
+		String devPayload = generatePayload();
+		ProductDetail sku = getSkuDetail(productId);
 
-		OverPID = productId;
-		//PID 값 세팅을 여기서 해준다.
-
+		Log.d(TAG, " I Am in buy product method22222222222222222222 ");
 
 /*		savePayloadString(devPayload);
 		showProgressDialog();*/
-		//Log.d(TAG, " I Am in buy product method33333333333333333333333 ");
-		/*PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
+		Log.d(TAG, " I Am in buy product method33333333333333333333333 ");
+		PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
 				.setProductId(productId)
 				.setProductType(PurchaseClient.ProductType.INAPP)
 				.setDeveloperPayload(devPayload)
 				.setPromotionApplicable(false)
 				.build();
-		launchPurchaseFlow(params);*/
+		launchPurchaseFlow(params);
 	}
 
 
@@ -440,7 +455,11 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 						if (iapResult.isSuccess()) {
 							if (purchaseData.getPurchaseToken().equals(data.getPurchaseToken())) {
 								mTokenToBe.remove(data.getPurchaseToken());
-								onConsumeFinished(purchaseData, iapResult);
+								try {
+									onConsumeFinished(purchaseData, iapResult);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							} else {
 								onError("purchaseToken not equal");
 							}
@@ -453,25 +472,104 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 		});
 	}
 
-	public void onConsumeFinished(PurchaseData purchaseData, IapResult iapResult) {
+	public void onConsumeFinished(PurchaseData purchaseData, IapResult iapResult) throws Exception {
 
 		Log.e(TAG, "onConsumeFinishedonConsumeFinishedonConsumeFinishedonConsumeFinished");
 		if (iapResult.isSuccess()) {
-			updateCoinsPurchased(purchaseData.getProductId());
+/*			updateCoinsPurchased(purchaseData.getProductId());
 			Spanned message = Html.fromHtml(
 					String.format("asd", getPurchasedCoins(purchaseData.getProductId()))
-			);
+			);*/
 			/*showDialog(message);*/
 
 			//여기에 acknowledgeasync를 불러야하나?
 			//아니면 pid 값이랑 토큰값을 전달해야하나???????
 
-			Log.e(TAG, "@@@@@@"+purchaseData.getProductId()+"@@@@@@@"+purchaseData.getPurchaseToken()+"@@@@@@");
+			Log.e(TAG, "@@@@@@" + purchaseData.getProductId() + "@@@@@@@" + purchaseData.getPurchaseToken() + "@@@@@@");
+			//NZ창헌
+			//OnIapResult(true , null , ToServTID , purchaseData.getPurchaseToken());
+			//여기서 새롭게 우리 쪽 서버에 아래 값 +UID 값을 보내고 , 받아온다음에
+			// 우리 게임 클래스 lobbyoptionalPanel의 recvw_payres가 보내는 곳
 
-		} else {
-			showDialog(iapResult.getMessage());
+			System.out.println("[HttpURLConnection 사용해  get 방식 데이터 요청 및 응답 값 확인 실시]");
+			url = "http://106.243.69.210:8080/OneStorePayCheck";
+			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, purchaseData.getPurchaseToken());
+			httpGetConnection(url, data);
 		}
 	}
+
+	public static void httpGetConnection(String UrlData, String ParamData) {
+		System.out.println("111111111");
+
+		//http 요청 시 url 주소와 파라미터 데이터를 결합하기 위한 변수 선언
+		String totalUrl = "";
+		if(ParamData != null && ParamData.length() > 0 &&
+				!ParamData.equals("") && !ParamData.contains("null")) { //파라미터 값이 널값이 아닌지 확인
+			totalUrl = UrlData.trim().toString() + "?" + ParamData.trim().toString();
+		}
+		else {
+			totalUrl = UrlData.trim().toString();
+		}
+		System.out.println("2222222222222222222222222222");
+		//http 통신을 하기위한 객체 선언 실시
+		URL url = null;
+		HttpURLConnection conn = null;
+		System.out.println("333333333333333333333333333333");
+		//http 통신 요청 후 응답 받은 데이터를 담기 위한 변수
+		String responseData = "";
+		BufferedReader br = null;
+		StringBuffer sb = null;
+		System.out.println("44444444444444444444444444444444");
+		//메소드 호출 결과값을 반환하기 위한 변수
+		String returnData = "";
+		System.out.println("555555555555555555555555555555555");
+		try {
+			System.out.println("6666666666666666666666666666666666");
+			//파라미터로 들어온 url을 사용해 connection 실시
+			url = new URL(totalUrl);
+			conn = (HttpURLConnection) url.openConnection();
+			System.out.println("7777777777777777777777777777777");
+			//http 요청에 필요한 타입 정의 실시
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestMethod("GET");
+
+			//http 요청 실시
+			conn.connect();
+			System.out.println("http 요청 방식 : "+"GET");
+			System.out.println("http 요청 타입 : "+"application/json");
+			System.out.println("http 요청 주소 : "+UrlData);
+			System.out.println("http 요청 데이터 : "+ParamData);
+			System.out.println("");
+			System.out.println("888888888888888888888888888888888888");
+			//http 요청 후 응답 받은 데이터를 버퍼에 쌓는다
+			br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+			sb = new StringBuffer();
+			while ((responseData = br.readLine()) != null) {
+				sb.append(responseData); //StringBuffer에 응답받은 데이터 순차적으로 저장 실시
+			}
+			System.out.println("999999999999999999999999999999999999999");
+			//메소드 호출 완료 시 반환하는 변수에 버퍼 데이터 삽입 실시
+			returnData = sb.toString();
+
+			//http 요청 응답 코드 확인 실시
+			String responseCode = String.valueOf(conn.getResponseCode());
+			System.out.println("http 응답 코드 : "+responseCode);
+			System.out.println("http 응답 데이터 : "+returnData);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			//http 요청 및 응답 완료 후 BufferedReader를 닫아줍니다
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	public void acknowledgeAsync(final PurchaseData data) {
 		if (mTokenToBe == null) {
@@ -658,23 +756,7 @@ public final class IapManager extends AppCompatActivity implements PurchasesUpda
 	}
 
 
-	private void updateCoinsPurchased(String productId) {
-		int coins = getPurchasedCoins(productId);
-		updateCoin(coins);
-	}
 
-	private int getPurchasedCoins(String productId) {
-		switch (productId) {
-			case "ruby_01":
-				return 55;
-			case "m_ruby_01":
-				return 30;
-			case "ruby_02":
-				return 110;
-			default:
-				return 0;
-		}
-	}
 
 
 	private void updateCoin(int coin) {
