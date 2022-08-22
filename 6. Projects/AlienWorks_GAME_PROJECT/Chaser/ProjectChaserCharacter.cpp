@@ -147,6 +147,7 @@ void AProjectChaserCharacter::CheckJump()
 		if (jumpCount == 2)
 		{
 			LaunchCharacter(FVector(0, 0, 500), false, true);
+			jumpCount = 0;
 		}
 	}
 }
