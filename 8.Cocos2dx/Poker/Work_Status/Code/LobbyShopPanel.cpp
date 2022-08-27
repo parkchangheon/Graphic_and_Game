@@ -13,12 +13,11 @@
 #include "W_PayReq.pb.h"
 #include "W_PayRes.pb.h"
 
+
+#include "android/IapManager.h"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) 
 	#include "android/IapManager.h"
 #endif
-//NZ창헌 원스토어
-#include "android/IapManager.h"
-
 #include "W_PayReserveReq.pb.h"
 #include "W_PayReserveRes.pb.h"
 #include "CmdQueue.h"
@@ -27,6 +26,9 @@
 #include "PokerRecordHelper.h"
 #include "PokerShopHelper.h"
 #include "BuyCharacterConfirmPanel.h"
+#include "GameDataManager.h"
+
+#include <string.h>
 //#include "ModelTabPanel.h"
 
 //#define USE_ONE_STORE
@@ -405,7 +407,17 @@ void LobbyShopPanel::onClicked(const string& name)
 		{
 			int _index = nxExtractInt(name, "RubyShopButton");
 			int32 _id = GameDataManager::getSingletonPtr()->GetGameDataPtr()->cashshopdata(_index).id();
+			CCLOG(" ruby_ID = %d ", _id);
+
+			//이건 우리쪽 게임 서버에 보내주는 요청 프로토콜이고 -> 원스토어 연동하고 결제 테스트 끝나면 해보자
 			sendWPayReserveReq(_id);
+
+			//이건 원스토어에 바로쏴주는거...//NZ창헌
+			/*if (IapManager::getSingleton().getPaymentType() == IapManager::ONE_STORE)*/
+//#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+//			IapManager::getSingleton().sendPaymentRequest("", "", ""); /* res.tid()  //기존 코드인데*/
+//#endif
+			
 
 			//PanelHelper::pushSimpleConfirmPopupPanel("Protocol Is Developing", "Client Message");
 
@@ -1708,6 +1720,7 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 	Nx::Label* title = m_ListCell[_toIdx]->getLabel("txt_character_name");	
 
 	W_CashShopData _pData = GameDataManager::getSingletonPtr()->GetGameDataPtr()->cashshopdata(_dstIdx);
+	int a = GameDataManager::getSingletonPtr()->GetGameDataPtr()->cashshopdata().size();
 	if (_pData.isfirstbonus()) {
 		if (PokerRecordHelper::isFirstBonus(_pData.id())) {
 			isFirstBuy = true;
@@ -1844,6 +1857,7 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 void LobbyShopPanel::sendW_PayReq(string tID, string txId, string receipt)
 {
 	CCLog("sendW_PayReq tID = %s , txid = %s, recept = %s", tID.c_str(), txId.c_str(), receipt.c_str());
+
 	W_PayReq req;
 	req.set_tid(tID);
 	req.set_txid(txId);
@@ -1859,21 +1873,25 @@ void LobbyShopPanel::sendW_PayReq(string tID, string txId, string receipt)
 
 void LobbyShopPanel::recvW_PayRes(HttpMessage* msg)
 {
+	CCLog("recvW_PayResrecvW_PayResrecvW_PayResrecvW_PayResrecvW_PayResrecvW_PayResrecvW_PayResrecvW_PayResrecvW_PayRes");
+
 	if (msg->hasCode()) {
+		CCLog("fffffffffaaaaaaaaallllllllllsssssssssssseeeeeeeeee");
 		return;
 	}
 
 	W_PayRes res;
+	CCLog("sssssssuuuuuuuuuuuuuuuuuuuuuuuu");
 	res.ParseFromArray(msg->getData(), msg->getSize());
 	NXASSERT(res.IsInitialized());
-
+	
 	bool beforeFirstBuy = PokerRecordHelper::isFirstBonus(mBuyCashId);
-
+	CCLog("sssssssssssssssssiiiiiiiiiiiiiiiiiiiiiiiuuuuuuuuuuuuuuuuuuuu");
 	for (int i = 0; i < res.payfirstinfo_size(); i++)
 	{
 		GameDataManager::getSingleton().setPayFirstInfo(res.payfirstinfo(i));
 	}
-
+	CCLog("---------------------------------------------------------");
 	bool afterFirstBuy = PokerRecordHelper::isFirstBonus(mBuyCashId);
 
 	bool isFirstBuy = false;
@@ -1897,10 +1915,12 @@ void LobbyShopPanel::recvW_PayRes(HttpMessage* msg)
 
 		if (res.has_playerinfo())
 		{
+			CCLog("EVERTYHING HAS SUCCESSEVERTYHING HAS SUCCESSEVERTYHING HAS SUCCESSEVERTYHING HAS SUCCESSEVERTYHING HAS SUCCESSEVERTYHING HAS SUCCESS");
 			int getRewardRuby = res.playerinfo().cash() - GameDataManager::getSingletonPtr()->GetPlayerDataPtr()->m_Cash;
 			//상품 이름
 			PanelHelper::pushRubyRewardPanel(getRewardRuby, mBuyCashId, isFirstBuy);
 			GameDataManager::getSingleton().setPlayerInfo(res.playerinfo());			
+
 		}		
 	}
 	else {
@@ -1928,9 +1948,7 @@ void LobbyShopPanel::sendWPayReserveReq(int cashId)
 	else
 		req.set_markettype(Google);
 #else
-	//NZ창헌 원스토어 결제 setting 
-	//req.set_markettype(Local);
-	req.set_markettype(OneStore);
+	req.set_markettype(Local);
 #endif
 	req.set_paytype(ePayCash);
 	req.set_id(cashId);
@@ -1951,19 +1969,18 @@ void LobbyShopPanel::recvWPayReserveRes(HttpMessage* msg)
 	if (res.success()) {
 		CCLog("W_PayReserveRes sucess");
 
+		
+		
+		//NZ창헌 -여기를 수정해서 결제Flow 자체를 바꿔야할 듯 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) 
-		if (IapManager::getSingleton().getPaymentType() == IapManager::ONE_STORE)
-			IapManager::getSingleton().sendPaymentRequest(res.productid(), "", res.tid());
+		if (IapManager::getSingletonPtr()->getPaymentType() == IapManager::ONE_STORE)
+			IapManager::getSingletonPtr()->sendPaymentRequest(res.productid(), StringConverter::toString(res.uid()), res.tid());
 		else {
 			mGoogleTid = res.productid();
 			IapManager::getSingleton().launchPurchaseFlow(res.productid(), "", res.tid());
 		}		
 #else
-		//NZ창헌 원스토어때문에 넣어줌 원래 없음
-		//if (IapManager::getSingleton().getPaymentType() == IapManager::ONE_STORE)
-		//	IapManager::getSingleton().sendPaymentRequest(res.productid(), "", res.tid());
-
-		WebService::getSingletonPtr()->_sendCashBuyReq(mBuyCashId);
+		//WebService::getSingletonPtr()->_sendCashBuyReq(mBuyCashId);
 		STCMD_IAP_ONESTORE_REQUEST_RESULT iapRequestResult;
 		iapRequestResult.isSucess = true;
 		iapRequestResult.errMsg = "";
@@ -1975,7 +1992,7 @@ void LobbyShopPanel::recvWPayReserveRes(HttpMessage* msg)
 #endif // DEBUG
 
 		
-	} //게임 서버로부터 성공적으로 받아왔습니다~
+	}
 	else {
 		CCLog("W_PayReserveRes fail");
 		if (res.has_errorstring())

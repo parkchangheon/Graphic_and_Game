@@ -100,6 +100,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 	private static String ToServTID ="";
 	private static String GProducerName="";
+	private static String PdToken="";
 	public String url = "";
 	public String data = "";
 
@@ -490,10 +491,12 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			//OnIapResult(true , null , ToServTID , purchaseData.getPurchaseToken());
 			//여기서 새롭게 우리 쪽 서버에 아래 값 +UID 값을 보내고 , 받아온다음에
 			// 우리 게임 클래스 lobbyoptionalPanel의 recvw_payres가 보내는 곳
-
+			PdToken = purchaseData.getPurchaseToken();
 			System.out.println("[HttpURLConnection 사용해  get 방식 데이터 요청 및 응답 값 확인 실시]");
 			url = "http://106.243.69.210:8080/OneStorePayCheck";
-			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, purchaseData.getPurchaseToken());
+
+
+			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, PdToken);
 			httpGetConnection(url, data);
 		}
 	}
@@ -551,10 +554,20 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			//메소드 호출 완료 시 반환하는 변수에 버퍼 데이터 삽입 실시
 			returnData = sb.toString();
 
+
+
 			//http 요청 응답 코드 확인 실시
 			String responseCode = String.valueOf(conn.getResponseCode());
 			System.out.println("http 응답 코드 : "+responseCode);
-			System.out.println("http 응답 데이터 : "+returnData);
+			System.out.println("http 응답 데이터 : "+returnData); //0이면성공으로 처리
+			/*if(returnData.equals("0"))
+			{
+				System.out.println("101010101010101010101010110");
+				OnIapResult(true , null , ToServTID , PdToken);
+			}*/
+
+			OnIapResult(returnData.equals("0") , null , ToServTID , PdToken);
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
