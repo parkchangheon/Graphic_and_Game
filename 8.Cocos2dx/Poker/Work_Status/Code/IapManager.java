@@ -27,7 +27,6 @@ import com.gaa.sdk.iap.StoreInfoListener;
 
 
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.newzensoft.pfutil.ToSendResult;
 import com.newzensoft.poker.R;
 import com.numixent.inApp.helper.ConverterFactory;
 import com.numixent.inApp.helper.ParamsBuilder;
@@ -89,7 +88,6 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 	private Activity mActivity;
 	private PurchaseClient mPurchaseClient;
 	private ProgressDialog mProgressDialog;
-	public ToSendResult mTosendResult;
 	private static IapManager iapMgr = null;
 
 	private Set<String> mTokenToBe;
@@ -103,6 +101,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 	private static String PdToken="";
 	public String url = "";
 	public String data = "";
+	public Boolean Check_Payment = false;
 
 
 	public static Object instance() {
@@ -234,7 +233,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				Log.d(TAG, iapResult.toJsonString());
 				/*buyProduct(list.get(1).getProductId());*/  //이부분에서 저 id 값을 클릭한 값으로 받아오는걸 한번 구현해야한다.
 				Log.d(TAG, " iam in the queryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsync ");
-
+				Check_Payment = true;
 			}
 		});
 	}
@@ -242,6 +241,15 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 
 	private void buyProduct(final String productId,final String ProducerName, final String productTid) {
+
+		while(true)
+		{
+			if(iapMgr.Check_Payment == true) {
+				Check_Payment = false;
+				break;
+			}
+		}
+
 		ToServTID = productTid;
 		GProducerName = ProducerName;
 		Log.d(TAG, " I Am in buy product method!!!! ");
@@ -493,8 +501,8 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			// 우리 게임 클래스 lobbyoptionalPanel의 recvw_payres가 보내는 곳
 			PdToken = purchaseData.getPurchaseToken();
 			System.out.println("[HttpURLConnection 사용해  get 방식 데이터 요청 및 응답 값 확인 실시]");
-			url = "http://106.243.69.210:8080/OneStorePayCheck";
-
+			//url = "http://106.243.69.210:8080/OneStorePayCheck";
+			url = "http://43.200.41.21:8080/OneStorePayCheck";
 
 			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, PdToken);
 			httpGetConnection(url, data);
@@ -567,6 +575,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			}*/
 
 			OnIapResult(returnData.equals("0") , null , ToServTID , PdToken);
+
 
 
 		} catch (IOException e) {
