@@ -1731,7 +1731,7 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 	if (_pData.has_title()) {
 		title->setString(_pData.title().c_str());
 	}
-
+	
 	middleName->setVisible(false);
 	if (_pData.has_name())
 	{
@@ -1743,15 +1743,12 @@ void LobbyShopPanel::UpdateRubyShopList(int _toIdx, int _dstIdx)
 		string _text = _pData.desc_1();
 		if (isFirstBuy) {
 			_text += "\n";
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-			_text += "\n";
-#endif // 0
 
 		}
 		_pSpec->setString(_text.c_str());
 		vector<string> ids;
 		nxTokenize(_text, "\n", back_inserter(ids));
-
+		wstring wstr = StringConverter::toWstring(_text.c_str());
 		if (_text == " ") {
 			//bottomName->setVisible(true);
 			middleName->setVisible(true);
@@ -2165,6 +2162,7 @@ void LobbyShopPanel::initModelShopPanel()
 void LobbyShopPanel::onEnter()
 {
 	Panel::onEnter();
+	
 
 	setTouchable(true);
 }

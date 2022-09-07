@@ -9,9 +9,11 @@
 #include "jni/JniHelper.h"
 #endif
 #include "NxHttpManager.h"
+#include "W_RestorePayRes.pb.h"
+
 
 #define IAP_JAVA_OBJECT "com/newzensoft/inApp/IapManager"
-#define IAP_GOOGLE_JAVA_OBJECT "com/newzensoft/googleinapp/GoogleIapManager"
+#define IAP_GOOGLE_JAVA_OBJECT "com/numixent/googleinapp/GoogleIapManager"
 
 using google::protobuf::Message;
 
@@ -31,17 +33,18 @@ public:
 public:	
 	void exit();	//종료시 exit 해준다.
 	void setDevelopMode(bool delvopmode);	//처음 설정 맨 처음 한번만 인정
-	void sendPaymentRequest(string productId, string produceName, string tID);		//원스토어 결제
+	void sendPaymentRequest(std::string productId, std::string produceName, std::string tID);		//원스토어 결제
 	void launchPurchaseFlow(string productId, string produceName, string tID);		//구글 스토어 결제
 	void consumeProduceId(string productId);
 	void checkAsyncInventory();
-
+	void checkUnpaid(std::string tid, std::string pid, std::string uid);
+	void sendPID(string pid);
 //payment type
 	void setPaymentType(PaymentTypeType type) { mPaymentType = type; }
 	PaymentTypeType getPaymentType() { return mPaymentType; }
 
 public:
-	void onOneStorePurchaseRequestResult(bool isSucess, string errMsg , string tid , string txid , string receipt);
+	void onOneStorePurchaseRequestResult(bool isSucess, string errMsg , string tid , string receipt);
 	void onGoogleStorePurchaseRequestResult(bool isSucess, string errMsg, string tid, string orderId, string purchaseToken);
 	void onGoogleStoreCheckPurchaseRequestResult(bool isSucess, string inappId, string tid, string orderId, string purchaseToken);
 

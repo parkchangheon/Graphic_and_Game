@@ -94,14 +94,19 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 	private boolean isServiceConnected;
 
 	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String ToServToken);
+	public static native void sendPID(String pid);
 	/*public static native String CallPurchaseStart(String pid);*/
 
 	private static String ToServTID ="";
 	private static String GProducerName="";
 	private static String PdToken="";
+	private static String tmp_token="";
+	private static  String tmp_tid="";
 	public String url = "";
 	public String data = "";
+	public Boolean Init_Instance = false;
 	public Boolean Check_Payment = false;
+	public Boolean Check_Repayment = false;
 
 
 	public static Object instance() {
@@ -113,13 +118,16 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 					iapMgr = new IapManager(getActivity());
 				}
 				System.out.println("instance 3");
+
 			}
 		});
 
 		while(true) {
-			System.out.println("instance 4");
-			if (iapMgr != null)
+			//System.out.println("instance 4");
+			if (iapMgr != null) {
+				System.out.println("instance 4");
 				return iapMgr;
+			}
 		}
 
 	}
@@ -234,6 +242,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				/*buyProduct(list.get(1).getProductId());*/  //이부분에서 저 id 값을 클릭한 값으로 받아오는걸 한번 구현해야한다.
 				Log.d(TAG, " iam in the queryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsyncqueryProductDetailsAsync ");
 				Check_Payment = true;
+
 			}
 		});
 	}
@@ -244,7 +253,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 		while(true)
 		{
-			if(iapMgr.Check_Payment == true) {
+			if(iapMgr.Check_Payment) {
 				Check_Payment = false;
 				break;
 			}
@@ -260,8 +269,6 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 		Log.d(TAG, " I Am in buy product method22222222222222222222 ");
 
-/*		savePayloadString(devPayload);
-		showProgressDialog();*/
 		Log.d(TAG, " I Am in buy product method33333333333333333333333 ");
 		PurchaseFlowParams params = PurchaseFlowParams.newBuilder()
 				.setProductId(productId)
@@ -319,31 +326,19 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 		if(iapResult.isSuccess() && list != null) {
 			for(PurchaseData purchase : list){
 				consumeAsync(purchase);
+				
 				Log.d(TAG, "=========================== Now I am in onPurchasesUpdated 2222===========================");
 			}
-		}else if(iapResult.getResponseCode() == PurchaseClient.ResponseCode.RESULT_USER_CANCELED){
+		}else if(iapResult.getResponseCode() == PurchaseClient.ResponseCode.RESULT_USER_CANCELED){ //결제가 취소
 			Log.d(TAG, "=========================== Now I am in onPurchasesUpdated3333 ===========================");
 			Log.d(TAG, iapResult.toJsonString());
-		}else {
+		}
+
+		else {
 			Log.d(TAG, "=========================== Now I am in onPurchasesUpdated4444 ===========================");
 			Log.d(TAG, iapResult.toJsonString());
 		}
 	}
-
-/*
-	@Override
-	public void onPurchasesUpdated(IapResult iapResult, List<PurchaseData> purchaseData) {
-		if (iapResult.isSuccess()) {
-			Log.e(TAG, "onpurchasesupdated");
-
-			onPurchaseUpdated(purchaseData);
-
-			return;
-		}
-
-		handleErrorCode(iapResult);
-	}
-*/
 
 	public void launchLoginFlow(IapResultListener listener) {
 		mPurchaseClient.launchLoginFlowAsync(mActivity, listener);
@@ -440,8 +435,8 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 		return randomString.toString();
 	}
 
-	public void consumeAsync(final PurchaseData data) {
-		Log.i(TAG, "inside consumeAsyncconsumeAsyncconsumeAsyncconsumeAsync");
+	public void consumeAsync(final PurchaseData data) { //관리형 상품 소비하기.
+		Log.i(TAG, "inside 컨슘어싱크");
 		if (mTokenToBe == null) {
 			mTokenToBe = new HashSet<>();
 		} else if (mTokenToBe.contains(data.getPurchaseToken())) {
@@ -454,9 +449,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 		executeServiceRequest(new Runnable() {
 			@Override
 			public void run() {
-				ConsumeParams params = ConsumeParams.newBuilder()
-						.setPurchaseData(data)
-						.build();
+				ConsumeParams params = ConsumeParams.newBuilder().setPurchaseData(data).build();
 
 				mPurchaseClient.consumeAsync(params, new ConsumeListener() {
 					@Override
@@ -481,30 +474,109 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 		});
 	}
 
+
+	//NZ창헌 ===========================0902===========================
+	public void restorePurchases(final String pid, final String tid, final String uid)
+	{
+		Log.d(TAG, "Unused Data Java Android Logic Start1");
+		mPurchaseClient.queryPurchasesAsync(PurchaseClient.ProductType.INAPP, new PurchasesListener() {
+			@Override
+			public void onPurchasesResponse(IapResult iapResult, @Nullable List<PurchaseData> list) {
+				Log.d(TAG, "Unused Data Java Android Logic Start2");
+
+				if (iapResult.isSuccess() && list != null) {
+					if(list.size() != 0){
+						for(PurchaseData purchaseData : list){
+							Log.d(TAG, "PPAAYY"+ purchaseData.toString());
+
+							if(purchaseData.getPurchaseState() == PurchaseData.PurchaseState.PURCHASED){
+
+								unConsumedListExecute(purchaseData, purchaseData.getProductId(), tid, uid);
+
+
+							}
+						}
+					}else{
+						Log.d(TAG, "list size 0");
+					}
+				} else {
+					Log.d(TAG, iapResult.toJsonString());
+				}
+			}
+		});
+	}
+
+	//소비되지 않은 결제리스트 소비
+	private void unConsumedListExecute(final PurchaseData purchaseData, final String pid, final String tid, final String uid)   //이미 구매는 되었다. => 확인할 것은 얘가 소비가 되었는지.
+	//이미 for 루프 돌면서 하나씩 확인하니까, 얘가
+	{
+
+		ConsumeParams params = ConsumeParams.newBuilder().setPurchaseData(purchaseData).build();
+		mPurchaseClient.consumeAsync(params, new ConsumeListener() {
+			@Override
+			public void onConsumeResponse(IapResult iapResult, @Nullable PurchaseData purchaseData) {
+				if (iapResult.isSuccess() && purchaseData != null) {
+
+					if (purchaseData.getPurchaseToken().equals(purchaseData.getPurchaseToken())) {
+						Log.d(TAG, purchaseData.toString());
+						tmp_token = purchaseData.getPurchaseToken();
+						tmp_tid=tid;
+
+						url = "http://106.243.69.210:8080/OneStorePayCheck";
+						//url = "http://43.200.41.21:8080/OneStorePayCheck";
+						Log.e(TAG, pid+ uid+ tid+ tmp_token);
+						data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), uid, tid, tmp_token);
+						Log.d(TAG, "After data parsing");
+						/*Check_Repayment = true;*/
+						httpGetConnection(url, data);
+
+
+						Log.d(TAG, "onConsumeResponse");
+
+					}
+
+
+					else{
+						Log.d(TAG, "purchaseToken not equal");
+					}
+				}
+
+				else if(iapResult.getResponseCode() == PurchaseClient.ResponseCode.RESULT_ITEM_NOT_OWNED) //	아이템을 소유하고 있지 않아 소비 할 수 없습니다.
+				{
+					Log.d(TAG, "Item RESULT_ITEM_NOT_OWNED!!!!!!!!");
+				}
+				else if(iapResult.getResponseCode() == PurchaseClient.ResponseCode.RESULT_ITEM_UNAVAILABLE) //	아이템을 소유하고 있지 않아 소비 할 수 없습니다.
+				{
+					Log.d(TAG, "Item RESULT_ITEM_UNAVAILABLE!!!!!!!!");
+				}
+
+
+				else {
+					Log.d(TAG, iapResult.toJsonString());
+				}
+			}
+		}); //consumeAsync End
+	}
+
+
+	//NZ창헌 ===========================0902===========================
+
+
 	public void onConsumeFinished(PurchaseData purchaseData, IapResult iapResult) throws Exception {
 
-		Log.e(TAG, "onConsumeFinishedonConsumeFinishedonConsumeFinishedonConsumeFinished");
+		Log.e(TAG, "컨슘피니쉬");
 		if (iapResult.isSuccess()) {
-/*			updateCoinsPurchased(purchaseData.getProductId());
-			Spanned message = Html.fromHtml(
-					String.format("asd", getPurchasedCoins(purchaseData.getProductId()))
-			);*/
-			/*showDialog(message);*/
-
-			//여기에 acknowledgeasync를 불러야하나?
-			//아니면 pid 값이랑 토큰값을 전달해야하나???????
-
 			Log.e(TAG, "@@@@@@" + purchaseData.getProductId() + "@@@@@@@" + purchaseData.getPurchaseToken() + "@@@@@@");
-			//NZ창헌
-			//OnIapResult(true , null , ToServTID , purchaseData.getPurchaseToken());
-			//여기서 새롭게 우리 쪽 서버에 아래 값 +UID 값을 보내고 , 받아온다음에
-			// 우리 게임 클래스 lobbyoptionalPanel의 recvw_payres가 보내는 곳
 			PdToken = purchaseData.getPurchaseToken();
+			//여기 토큰
+
+
 			System.out.println("[HttpURLConnection 사용해  get 방식 데이터 요청 및 응답 값 확인 실시]");
-			//url = "http://106.243.69.210:8080/OneStorePayCheck";
-			url = "http://43.200.41.21:8080/OneStorePayCheck";
+			url = "http://106.243.69.210:8080/OneStorePayCheck";
+			//url = "http://43.200.41.21:8080/OneStorePayCheck";
 
 			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, PdToken);
+			/*sendPID(purchaseData.getProductId());*/
 			httpGetConnection(url, data);
 		}
 	}
@@ -572,6 +644,14 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			{
 				System.out.println("101010101010101010101010110");
 				OnIapResult(true , null , ToServTID , PdToken);
+			}*/
+
+
+			/*if(returnData.equals("1") && iapMgr.Check_Repayment)
+			{
+				iapMgr.Check_Repayment = false;
+				System.out.println("tmp_tid, tmp_token : "+tmp_tid+" " +tmp_token);
+				OnIapResult(true , null , tmp_tid , tmp_token);
 			}*/
 
 			OnIapResult(returnData.equals("0") , null , ToServTID , PdToken);
@@ -660,6 +740,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				mPurchaseClient.queryPurchasesAsync(PurchaseClient.ProductType.AUTO, new PurchasesListener() {
 					@Override
 					public void onPurchasesResponse(IapResult iapResult, List<PurchaseData> purchaseData) {
+
 						Log.i(TAG, "AUTO - Querying purchases elapsed time: " + (System.currentTimeMillis() - time + "ms"));
 						if (iapResult.isSuccess()) {
 							result.addAll(purchaseData);
@@ -680,6 +761,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				mPurchaseClient.queryPurchasesAsync(PurchaseClient.ProductType.INAPP, new PurchasesListener() {
 					@Override
 					public void onPurchasesResponse(IapResult iapResult, List<PurchaseData> purchaseData) {
+
 						Log.i(TAG, "INAPP - Querying purchases elapsed time: " + (System.currentTimeMillis() - time + "ms"));
 						if (iapResult.isSuccess()) {
 							result.addAll(purchaseData);
@@ -690,6 +772,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 					}
 				});
 			}
+
 		});
 	}
 
@@ -781,17 +864,6 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 
 
-	private void updateCoin(int coin) {
-/*		SharedPreferences sp = getPreferences(MODE_PRIVATE);
-		SharedPreferences.Editor spe = getPreferences(MODE_PRIVATE).edit();
-
-		int savedCoins = sp.getInt(AppConstants.KEY_TOTAL_COIN, 0);
-		savedCoins += coin;
-		spe.putInt(AppConstants.KEY_TOTAL_COIN, savedCoins);
-		spe.apply();
-
-		mCoinView.setText(String.valueOf(savedCoins));*/
-	}
 
 
 }

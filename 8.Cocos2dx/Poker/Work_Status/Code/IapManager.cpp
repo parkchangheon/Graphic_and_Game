@@ -6,13 +6,16 @@
 #include "SimplePopupPanel.h"
 #include "W_PayReserveReq.pb.h"
 #include "W_PayReserveRes.pb.h"
+#include "../../protocpp/W_RestorePayReq.pb.h"
+#include "../../protocpp/W_RestorePayRes.pb.h"
 #include "base/CCScheduler.h"
 #include "../Game/PlayerData.h"
 #include "../Game/GameDataManager.h"
+#include "../Scene/LobbyScene.h"
 
 template<> IapManager* Nx::Singleton<IapManager>::msSingleton = 0;
 
-struct IapManagerObject //왜쓰는지 모름 
+struct IapManagerObject  
 {
 	JNIEnv* env;
 	jobject object;
@@ -75,6 +78,7 @@ struct GoogleIapManagerObject
 
 IapManager::IapManager()
 {	
+	
 #ifdef PAY_GOOGLE
 	setPaymentType(GOOGLE_STORE);
 #else
@@ -119,22 +123,21 @@ void IapManager::setDevelopMode(bool delvopmode)
 //원스토어로 보내는 결제 요청
 void IapManager::sendPaymentRequest(std::string productId, std::string produceName , std::string tID)
 {
-	
 	CCLog("IapManager::sendPaymentRequest productId = %s , tid = %s" , productId.c_str() , tID.c_str());
 	IapManagerObject obj;
 	if (!obj.getObject())
 		return;
 
+	
 	CCLog("IapManager::sendPaymentRequest 1");
 
 	//딜레이 값을 주려고 하는것인데 위험하다
-	int a = 0;
-	for (int i = 0; i < 30000; i++) { //1중첩 for문
-		for (int j = 0; j < 30000; j++) { //2중첩 for문
-			a++;
-		}
-
-	}
+	//int a = 0;
+	//for (int i = 0; i < 25000; i++) { //1중첩 for문
+	//	for (int j = 0; j < 25000; j++) { //2중첩 for문
+	//		a++;
+	//	}
+	//}
 
 	CCLog("IapManager::sendPaymentRequest 2");
 	JniMethodInfo t;
@@ -146,6 +149,7 @@ void IapManager::sendPaymentRequest(std::string productId, std::string produceNa
 		jstring jproduceName = t.env->NewStringUTF(produceName.c_str());
 		jstring jproductTid = t.env->NewStringUTF(tID.c_str());
 		t.env->CallVoidMethod(obj.getObject(), t.methodID, jproductId, jproduceName, jproductTid);
+
 		//t.env->CallVoidMethod(obj.getObject(), t.methodID, true, jproductId, jproduceName, jproductTid);
 		t.env->DeleteLocalRef(t.classID);
 		t.env->DeleteLocalRef(jproductId);
@@ -157,14 +161,20 @@ void IapManager::sendPaymentRequest(std::string productId, std::string produceNa
 void IapManager::onOneStorePurchaseRequestResult(bool isSucess, string errMsg, string tid , string receipt)
 {
 	CCLog("onOneStorePurchaseRequestResultonOneStorePurchaseRequestResultonOneStorePurchaseRequestResultonOneStorePurchaseRequestResult");
+	CCLog("the tid is = %s", tid.c_str());
 	STCMD_IAP_ONESTORE_REQUEST_RESULT iapRequestResult;
 	iapRequestResult.isSucess = isSucess;
 	iapRequestResult.errMsg = errMsg;
 	iapRequestResult.tid = tid;
 	iapRequestResult.txid = "";
 	iapRequestResult.receipt = receipt;
+	
+
 	CCLog("IapManager::onRequestResult isSucess = %d , tid = %s , receipt = %s", isSucess , tid.c_str(), receipt.c_str());
 	CCmdQueue::getSingleton().pushQueue(iapRequestResult);
+
+
+
 }
 
 void IapManager::launchPurchaseFlow(string productId, string produceName, string tID)
@@ -246,5 +256,50 @@ void IapManager::onGoogleStoreCheckPurchaseRequestResult(bool isSucess, string i
 	CCmdQueue::getSingleton().pushQueue(iapRequestResult);
 }
 
+//NZ창헌 - UnGivenItem 0905
+//void IapManager::checkUnGivenItem()
+//{
+//	LobbyScene::sendW_Restore();
+//#endif
+//}
+
+
+void IapManager::checkUnpaid(std::string tid, std::string pid, std::string uid)
+{
+	
+	CCLog("itsalamaicoom");
+	IapManagerObject obj;
+
+	if (!obj.getObject())
+		return;
+
+	
+	JniMethodInfo t;
+
+	CCLog("%s    %s     %s", tid.c_str(), pid.c_str(), uid.c_str());
+	//NZ창헌 - sendpaymentrequest 변경 -> buyProduct
+	if (JniHelper::getMethodInfo(t, IAP_JAVA_OBJECT, "restorePurchases", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")) {
+		jstring jproductId = t.env->NewStringUTF(pid.c_str());
+		jstring jproduceName = t.env->NewStringUTF(uid.c_str());
+		jstring jproductTid = t.env->NewStringUTF(tid.c_str());
+		t.env->CallVoidMethod(obj.getObject(), t.methodID, jproductId, jproductTid, jproduceName);
+		//t.env->CallVoidMethod(obj.getObject(), t.methodID, jproductId, jproductTid);
+
+
+		//t.env->CallVoidMethod(obj.getObject(), t.methodID, true, jproductId, jproduceName, jproductTid);
+		t.env->DeleteLocalRef(t.classID);
+		t.env->DeleteLocalRef(jproductId);
+		t.env->DeleteLocalRef(jproductTid);
+		t.env->DeleteLocalRef(jproduceName);
+	}
+}
+
+
+void IapManager::sendPID(string pid)
+{
+	CCLog("sendPID has come in to here %s");
+	LobbyScene* LS;
+	LS->getPPID(pid);
+}
 
 
