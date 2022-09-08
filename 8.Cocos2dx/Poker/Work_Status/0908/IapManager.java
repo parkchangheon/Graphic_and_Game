@@ -93,7 +93,8 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 	private Set<String> mTokenToBe;
 	private boolean isServiceConnected;
 
-	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String ToServToken);
+	public static native void OnIapResult(boolean sucess , String errMsg , String tid , String ToServToken, String pid);
+	//public static native void OnIapRemainResult(boolean sucess , String errMsg , String tid , String ToServToken, String pid);
 	/*public static native String CallPurchaseStart(String pid);*/
 
 	private static String ToServTID ="";
@@ -103,7 +104,7 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 	public String url = "";
 	public String data = "";
 	public Boolean Check_Payment = false;
-	public Boolean Check_UnPayment= false;
+	public Boolean Repay_Flag = false;
 
 
 
@@ -487,9 +488,9 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 
 
 	//NZ창헌 ===========================0902===========================
-	public void restorePurchases(final String pid, final String tid, final String uid)
+	public void restorePurchases(final String pid, final String tid, final String uid) //우리쪽에서 보내준 pid tid 하나씩
 	{
-		Check_UnPayment = true;
+		Repay_Flag= true;
 		globalTID = tid;
 		Log.d(TAG, "Unused Data Java Android Logic Start1");
 		mPurchaseClient.queryPurchasesAsync(PurchaseClient.ProductType.INAPP, new PurchasesListener() {
@@ -500,16 +501,15 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				if (iapResult.isSuccess() && list != null) {
 					if(list.size() != 0){
 						for(PurchaseData purchaseData : list){
-							Log.d(TAG, "PPAAYY"+ purchaseData.toString());
+							Log.d(TAG, "PPAAYY"+ purchaseData.toString()); // 실제로 결제 안된애들
 
-							if(purchaseData.getPurchaseState() == PurchaseData.PurchaseState.PURCHASED){
-
-								unConsumedListExecute(purchaseData, purchaseData.getProductId(), tid, uid);
-
-
+							if(purchaseData.getProductId().equals(pid)){
+								unConsumedListExecute(purchaseData, pid, tid, uid);    //pid, tid, uid를 보내준다
 							}
 						}
-					}else{
+					}
+
+					else{
 						Log.d(TAG, "list size 0");
 
 					}
@@ -534,20 +534,16 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 				if (iapResult.isSuccess() && purchaseData != null) {
 
 					if (purchaseData.getPurchaseToken().equals(purchaseData.getPurchaseToken())) {
-						Log.d(TAG, purchaseData.toString());
-						Log.d(TAG, "원스토어에서 뿌려주는 구매 오더 아이디"+ purchaseData.getOrderId());
-						String tmp_check_str="";
+						Log.d(TAG, "IINNSSIIDDEE"+ purchaseData.toString());
 
-
-						System.out.println("우리쪽에서 받아온 tid 값 " + tid);
 
 						url = "http://106.243.69.210:8080/OneStorePayCheck";
 						//url = "http://43.200.41.21:8080/OneStorePayCheck";
 
-						data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), uid, tid, purchaseData.getPurchaseToken());
+						data = String.format("pid=%s&uid=%s&tid=%s&token=%s", pid, uid, tid, purchaseData.getPurchaseToken());
 						Log.d(TAG, "After data parsing");
 						/*Check_Repayment = true;*/
-						httpGetConnection(url, data, purchaseData);
+						httpGetConnection(url, data, purchaseData, pid);
 
 
 						Log.d(TAG, "onConsumeResponse");
@@ -602,11 +598,11 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			//url = "http://43.200.41.21:8080/OneStorePayCheck";
 
 			data = String.format("pid=%s&uid=%s&tid=%s&token=%s", purchaseData.getProductId(), GProducerName, ToServTID, PdToken);
-			httpGetConnection(url, data, purchaseData);
+			httpGetConnection(url, data, purchaseData, purchaseData.getProductId());
 		}
 	}
 
-	public static void httpGetConnection(String UrlData, String ParamData, PurchaseData purchaseData) {
+	public static void httpGetConnection(String UrlData, String ParamData, PurchaseData purchaseData, String ppid) {
 		System.out.println("111111111");
 
 		//http 요청 시 url 주소와 파라미터 데이터를 결합하기 위한 변수 선언
@@ -665,28 +661,25 @@ public class IapManager extends AppCompatActivity implements PurchasesUpdatedLis
 			String responseCode = String.valueOf(conn.getResponseCode());
 			System.out.println("http 응답 코드 : "+responseCode);
 			System.out.println("http 응답 데이터 : "+returnData); //0이면성공으로 처리
-			/*if(returnData.equals("0"))
-			{
-				System.out.println("101010101010101010101010110");
-				OnIapResult(true , null , ToServTID , PdToken);
-			}*/
-			if(returnData.equals("0"))
-			{
-				if(iapMgr.Check_UnPayment)
+
+			if(returnData.equals("0")){
+				if(iapMgr.Repay_Flag)
 				{
-					iapMgr.Check_UnPayment = false;
-					OnIapResult(true , null , globalTID , purchaseData.getPurchaseToken());
-					return;
-
+					OnIapResult(true , null , globalTID , purchaseData.getPurchaseToken(), ppid);
+					iapMgr.Repay_Flag=false;
 				}
-
-				OnIapResult(returnData.equals("0") , null , ToServTID , PdToken);
-
+				else{
+					OnIapResult(returnData.equals("0") , null , ToServTID , PdToken, purchaseData.getProductId());
+				}
 			}
 
-			else if(returnData.equals("1") && purchaseData.getPurchaseState()== PurchaseData.PurchaseState.PURCHASED) //실패시
+			else //실패시
 			{
-				OnIapResult(true , null , globalTID , purchaseData.getPurchaseToken());
+				if(iapMgr.Repay_Flag){
+					OnIapResult(true , null , globalTID , purchaseData.getPurchaseToken(), ppid);
+					iapMgr.Repay_Flag=false;
+				}
+
 			}
 
 
