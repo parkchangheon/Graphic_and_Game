@@ -6,8 +6,12 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "/UE_5.0/Engine/Source/Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
 
+
+//////////////////////////////////////////////////////////////////////////
+// AProjectChaserCharacter
 
 //캐릭터 상태
 enum CHARATER_STATE
@@ -21,14 +25,12 @@ enum CHARATER_STATE
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-// AProjectChaserCharacter
-
 AProjectChaserCharacter::AProjectChaserCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
+	// set our turn rate for input
 	TurnRateGamepad = 50.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
@@ -59,11 +61,20 @@ AProjectChaserCharacter::AProjectChaserCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	TimelineComp = CreateDefaultSubobject<UTimelineComponent>(TEXT("TimelineComponent"));
 
-	jumpCount = 0;
-	jumping = false;
+	ConstructorHelpers::FObjectFinder<UCurveFloat> CurveObj(TEXT("CurveFloat'/Game/Characters/CurveFloat_Zero_To_One.CurveFloat_Zero_To_One'"));
+
+	Curvefloat = CurveObj.Object;
+	if (Curvefloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+		CurveTimeline.AddInterpFloat(Curvefloat, TimelineProgress);
+		CurveTimeline.SetLooping(true);
+		UE_LOG(LogTemp, Warning, TEXT("CurveTimeline = notnull"));
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -73,17 +84,10 @@ void AProjectChaserCharacter::SetupPlayerInputComponent(class UInputComponent* P
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AProjectChaserCharacter::CheckJump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AProjectChaserCharacter::CheckJump);
-
-
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AProjectChaserCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AProjectChaserCharacter::MoveRight);
-
-	//PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AProjectChaserCharacter::StartCrouch);
-	//PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AProjectChaserCharacter::StopCrouch);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -96,6 +100,23 @@ void AProjectChaserCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AProjectChaserCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AProjectChaserCharacter::TouchStopped);
+}
+
+void AProjectChaserCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AProjectChaserCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if(true) // can update Timeline Tick
+		CurveTimeline.TickTimeline(DeltaTime);
+}
+
+void AProjectChaserCharacter::UseSkill(int32 SkillCode)
+{
+
 }
 
 void AProjectChaserCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -118,44 +139,6 @@ void AProjectChaserCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
-
-//void AProjectChaserCharacter::Tick(float deltaTime)
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("Tick"));
-//	Super::Tick(deltaTime);
-//	if (jumping)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Tick Jump"));
-//		Jump();
-//	}
-//}
-
-
-void AProjectChaserCharacter::CheckJump()
-{
-	UE_LOG(LogTemp, Warning, TEXT("press Jump"));
-	if (jumping){
-		UE_LOG(LogTemp, Warning, TEXT("now Jump"));
-		jumping = false;
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("not Jump"));
-		Jump();
-		jumping = true;
-		jumpCount++;
-		if (jumpCount == 2)
-		{
-			LaunchCharacter(FVector(0, 0, 500), false, true);
-			jumpCount = 0;
-		}
-	}
-}
-
-void AProjectChaserCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-	jumpCount = 0;
 }
 
 void AProjectChaserCharacter::MoveForward(float Value)
@@ -185,4 +168,22 @@ void AProjectChaserCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AProjectChaserCharacter::ChangeMat(float ChangeTime,FName ParamName,UTexture* texture )
+{
+
+
+	//UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+	//GetMesh()->SetMaterial(0, DynamicMaterial);
+	
+	CurveTimeline.PlayFromStart();
+	
+	//DynamicMaterial->SetTextureParameterValue(ParamName, texture); //invisible texture
+}
+
+void AProjectChaserCharacter::TimelineProgress(float val)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Time = %f"), val);
+	GetMesh()->SetScalarParameterValueOnMaterials(FName("Blend"), val);
 }
