@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" width="264" height="396" layout="absolute">
+	<mx:Style>
+		.textStyle {
+			fontFamily:KBIZgoH;
+			fontSize:15;
+			color:#AEF81E;
+		}
+		.textStyle2 {
+			fontFamily:KBIZgoH;
+			fontSize:2;
+			color:#1E0E02;
+		}
+		.textStyle3 {
+			fontFamily:KBIZgoH;
+			fontSize:22;
+			color:#FDDC43;
+		}
+		.textStyle4 {
+			fontFamily:KBIZgoH;
+			fontSize:16;
+			color:#E28C48;
+		}
+		.textStyle5 {
+			fontFamily:KBIZgoH;
+			fontSize:22;
+			color:#FFF0D5;
+		}
+		.textStyle6 {
+			fontFamily:KBIZgoH;
+			fontSize:16;
+			color:#000000;
+		}
+		.textStyle7 {
+			fontFamily:KBIZgoH;
+			fontSize:16;
+			color:#FFFFFF;
+		}
+		.textStyle8 {
+			fontFamily:KBIZgoH;
+			fontSize:15;
+			color:#000000;
+		}
+	</mx:Style>
+	<mx:Image id="dmy_goods_panel" source="dmy_goods_panel.png" x="0" y="0" width="264" height="396"/>
+	<mx:Image id="skel_goods_penal_1_stay.shop_image_8888.goods_penal_1_stay" source="skel_goods_penal_1_stay.shop_image_8888.goods_penal_1_stay.png" x="5" y="5" width="254" height="384"/>
+	<mx:Image id="img_character_boxer" source="img_character_boxer.png" x="65" y="63" width="135" height="255"/>
+	<mx:Image id="skel_cover.uipanel_8888.table_shopcharac" source="skel_cover.uipanel_8888.table_shopcharac.png" x="7" y="6" width="250" height="380"/>
+	<mx:Image id="skel_cover_gold.shop_image_8888.cover_gold" source="skel_cover_gold.shop_image_8888.cover_gold.png" x="4" y="3" width="256" height="386"/>
+	<mx:Text id="txt_spec.c.b.62" styleName="textStyle" x="26" y="264" width="212" text="+1000억 골드 줍니다.
+이것저것 다 드립니다.
+"/>
+	<mx:Text id="ast_spec" styleName="textStyle2" x="26" y="264" width="212" text="+1000억 골드 줍니다.
+이것저것 다 드립니다.
+"/>
+	<mx:Image id="dmy_gold_goods_top" source="dmy_gold_goods_top.png" x="20" y="238" width="224" height="29"/>
+	<mx:Text id="txt_gold_goods_center.c.b.33" styleName="textStyle3" x="20" y="249" width="224" text="즉시 1000억골드 증정"/>
+	<mx:Text id="ast_gold_goods_center" styleName="textStyle2" x="20" y="249" width="224" text="즉시 1000억골드 증정"/>
+	<mx:Image id="dmy_gold_goods_bottom" source="dmy_gold_goods_bottom.png" x="20" y="264" width="224" height="29"/>
+	<mx:Text id="txt_limit.r.b.25" styleName="textStyle4" x="89" y="42" width="164" text="사용기한 : 90일"/>
+	<mx:Text id="txt_character_name.c.b.33" styleName="textStyle5" x="12" y="15" width="240" text="블랙로즈 바캉스"/>
+	<mx:Image id="skel_label_red2.shop_image_8888.label_red" source="skel_label_red2.shop_image_8888.label_red.png" x="4" y="44" width="90" height="38"/>
+	<mx:Image id="skel_label_red.shop_image_8888.label_red" source="skel_label_red.shop_image_8888.label_red.png" x="4" y="82" width="90" height="38"/>
+	<mx:Text id="txt_label_shadow.l.b.25" styleName="textStyle6" x="8" y="90" width="82" text="40%할인"/>
+	<mx:Text id="txt_label.l.b.25" styleName="textStyle7" x="8" y="89" width="82" text="40%할인"/>
+	<mx:Image id="skel_line_choose.lobby_effect_8888.line_choose" source="skel_line_choose.lobby_effect_8888.line_choose.png" x="4" y="2" width="256" height="388"/>
+	<mx:Image id="dmy_button_shop" source="dmy_button_shop.png" x="66" y="319" width="132" height="58"/>
+	<mx:Image id="dmy_sticker" source="dmy_sticker.png" x="178" y="42" width="76" height="74"/>
+	<mx:Image id="skel_bonus.shop_image_8888.panel_bonus" source="skel_bonus.shop_image_8888.panel_bonus.png" x="30" y="296" width="204" height="40"/>
+	<mx:Text id="txt_bonus.c.b.22" styleName="textStyle8" x="32" y="299" width="200" text="첫 결제시 225루비 추가!"/>
+	<mx:Text id="txt_overlap_notice.c.b.88" styleName="textStyle5" x="55" y="225" width="164"  height="70" text=""/>
+
+</mx:Application>
