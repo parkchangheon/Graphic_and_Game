@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NoirActiveSkill.h"
 #include "Character_Thief.h"
 #include "Noir.generated.h"
 
@@ -26,9 +27,30 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void UseSkill(int32 SkillCode) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WallJump")
+	float TraceDistance;
+
+	UFUNCTION()
+	bool TraceForward();
+	//UFUNCTION()
+	//bool DoubleJumpCheck();
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void NoirActiveSkill1();
+
 public:
 	UPROPERTY()
-		bool isJump;
+	bool isJump;
 	int jumpCount;
+	bool jumpTrace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FVector MuzzleOffset;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AActor> SkillOBJ;
+
+	UCameraComponent* NoirCam;
 
 };

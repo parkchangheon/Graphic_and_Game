@@ -6,7 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "NoirActiveSkill.generated.h"
 
-UCLASS()
+class UProjectileMovementComponent;
+
+UCLASS(config = Game)
 class PROJECTCHASER_API ANoirActiveSkill : public AActor
 {
 	GENERATED_BODY()
@@ -25,7 +27,7 @@ public:
 
 	void FireInDirection(const FVector& ShootDirection);
 
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovementComponent;
 
 private:
@@ -35,4 +37,7 @@ private:
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovementComponent; }
+
 };

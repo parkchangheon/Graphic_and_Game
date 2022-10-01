@@ -23,7 +23,7 @@ ANoirActiveSkill::ANoirActiveSkill()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(Mesh);
-	ProjectileMovementComponent->InitialSpeed = 500.0f;
+	ProjectileMovementComponent->InitialSpeed = 3000.0f;
 	ProjectileMovementComponent->MaxSpeed = 3000.0f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
@@ -32,32 +32,24 @@ ANoirActiveSkill::ANoirActiveSkill()
 	InitialLifeSpan = 3.0f;
 }
 
-// Called when the game starts or when spawned
-void ANoirActiveSkill::BeginPlay()
-{
-	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("Projectile has spawned!!"));
-	
-
-}
-
-// Called every frame
-void ANoirActiveSkill::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void ANoirActiveSkill::FireInDirection(const FVector& ShootDirection)
-{
-	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
-}
+//void ANoirActiveSkill::FireInDirection(const FVector& ShootDirection)
+//{
+//	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
+//}
 
 
 void ANoirActiveSkill::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit) 
 {
+
+	
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+	
+	if (OtherActor->ActorHasTag("Police"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("It is a police"));
+
+	}
 }
 
 
