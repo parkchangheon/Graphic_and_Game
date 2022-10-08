@@ -66,7 +66,7 @@ void ANoir::CheckJump()
 		if (jumpCount == 2)
 		{
 			// 여기서 bool형식으로 라인트레이스 시, 벽이면 2단 점프 가능하게 
-			TraceForward(); //트레이스 앞으로
+			/*TraceForward();*/ //트레이스 앞으로
 			if (TraceForward()) {
 				UE_LOG(LogTemp, Warning, TEXT("AfterHit"));
 				LaunchCharacter(FVector(0, 0, 500), false, true);
@@ -103,25 +103,41 @@ void ANoir::UseSkill(int32 SkillCode)
 bool ANoir::TraceForward() {
 		FHitResult OutHit;
 		FVector Start = GetActorLocation();
-	
 		FVector ForwardVector = GetActorForwardVector();
 		FVector End = ((ForwardVector * 100.f) + Start);
 		FCollisionQueryParams collisionParams;
-	
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f,5.f, 5.f);
-	
-		bool isHit = ActorLineTraceSingle(OutHit, Start, End, ECC_WorldStatic, collisionParams);
+		collisionParams.bTraceComplex = true;
+		collisionParams.AddIgnoredActor(this);
 		
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f,5.f, 5.f);
+
+		//if (ForwardVector.X >= 0) {
+		//	Start.X += 50;
+		//}
+
+		//else {
+		//	Start.X -= 50;
+		//}
+
+		bool isHit = ActorLineTraceSingle(OutHit, Start, End, ECC_WorldStatic, collisionParams);
+
 		if (isHit)
 		{
 			if (GEngine) 
 			{
+				UE_LOG(LogTemp, Warning, TEXT("GET IN SIDE"));
+
 				GEngine->AddOnScreenDebugMessage(01, 1.f, FColor::Blue, FString::Printf(TEXT("The Comp being hit is : %s"),
 					*OutHit.GetComponent()->GetName()));
+				if (OutHit.GetActor()->ActorHasTag("Wall")) {
+					UE_LOG(LogTemp, Warning, TEXT("GET IN SIDE222"));
+					return true;
+
+				}
 			}
-			UE_LOG(LogTemp, Warning, TEXT("isHit isHit!!"));
-			return true;
+			
 		}
+
 		UE_LOG(LogTemp, Warning, TEXT("nothing happen!!"));
 		return false;
 }
