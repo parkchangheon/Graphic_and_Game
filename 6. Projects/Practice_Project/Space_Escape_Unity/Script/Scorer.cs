@@ -9,7 +9,11 @@ public class Scorer : MonoBehaviour
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
-        hits++;
-        Debug.Log("You've bump in to things %d" + hits);
+        if(collision.gameObject.tag != "Hit")
+        {
+            hits++;
+            Debug.Log("You've bump in to things %d" + hits);
+        }
+        
     }
 }
