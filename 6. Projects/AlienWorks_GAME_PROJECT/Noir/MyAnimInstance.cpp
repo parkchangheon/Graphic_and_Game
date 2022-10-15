@@ -6,16 +6,16 @@
 #include "GameFramework/PawnMovementComponent.h"
 
 
-//UMyAnimInstance::UMyAnimInstance()
-//{
-//	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("AnimMontage'/Game/ProjectAsset/Character/Theif_Noir/Noir_Mixamo_Standing_Melee_Attack_360_High_Anim_Retargeted_Montage.Noir_Mixamo_Standing_Melee_Attack_360_High_Anim_Retargeted_Montage'"));
-//	if (AM.Succeeded())
-//	{
-//		NoirSkillMontage = AM.Object;
-//
-//	}
-//}
+UMyAnimInstance::UMyAnimInstance()
+{
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("AnimMontage'/Game/ProjectAsset/Character/Theif_Noir/Noir_Mixamo_Standing_Melee_Attack_Downward_Retargeted_Montage.Noir_Mixamo_Standing_Melee_Attack_Downward_Retargeted_Montage'"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("AnimMontage'/Game/ProjectAsset/Character/Theif_Noir/Noir_Mixamo_Standing_Melee_Attack_360_High_Anim_Retargeted_Montage.Noir_Mixamo_Standing_Melee_Attack_360_High_Anim_Retargeted_Montage'"));
 
+	if (AM.Succeeded())
+	{
+		NoirSkillMontage = AM.Object;
+	}
+}
 
 void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)  //프레임마다 꺼낸다.
 {
@@ -34,11 +34,11 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)  //프레임마다 꺼
 
 }
 
-//void UMyAnimInstance::PlaySkillMontage()
-//{
-//	if (!Montage_IsPlaying(NoirSkillMontage)) {
-//		Montage_Play(NoirSkillMontage, 1.f);
-//	}
-//
-//}
+void UMyAnimInstance::PlaySkillMontage()
+{
+	if (!Montage_IsPlaying(NoirSkillMontage)) {
+		Montage_Play(NoirSkillMontage, 1.f);
+	}
+
+}
 
