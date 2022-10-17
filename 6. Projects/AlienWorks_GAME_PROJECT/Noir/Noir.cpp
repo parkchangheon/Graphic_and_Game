@@ -3,6 +3,7 @@
 
 #include "Noir.h"
 #include "NoirActiveSkill.h"
+#include "MyAnimInstance.h"
 #include "DrawDebugHelpers.h"
 #include "Particles/ParticleSystem.h"
 
@@ -101,23 +102,35 @@ void ANoir::UseSkill(int32 SkillCode)
 }
 
 bool ANoir::TraceForward() {
-		FHitResult OutHit;
-		FVector Start = GetActorLocation();
-		FVector ForwardVector = GetActorForwardVector();
-		FVector End = ((ForwardVector * 100.f) + Start);
-		FCollisionQueryParams collisionParams;
-		collisionParams.bTraceComplex = true;
-		collisionParams.AddIgnoredActor(this);
-		
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f,5.f, 5.f);
+	FHitResult OutHit;
+	FVector Start = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector End = ((ForwardVector * 150.f) + Start);
+	FCollisionQueryParams collisionParams;
+	collisionParams.bTraceComplex = true;
+	collisionParams.AddIgnoredActor(this);
 
-		//if (ForwardVector.X >= 0) {
-		//	Start.X += 50;
-		//}
+	if (ForwardVector.X >= 0) {
+		Start.X += 50;
+	}
 
-		//else {
-		//	Start.X -= 50;
-		//}
+	else {
+		Start.X -= 50;
+	}
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f, 5.f, 5.f);
+
+
+	//if (ActorLineTraceSingle(OutHit, Start, End, ECC_GameTraceChannel2, collisionParams)) {
+	//	UE_LOG(LogTemp, Warning, TEXT("GET IN SIDE"));
+	//	if (OutHit.GetActor()->ActorHasTag("Wall")) {
+	//		UE_LOG(LogTemp, Warning, TEXT("Wall Jump Success"));
+	//		return true;
+	//	}
+
+	//}
+	//UE_LOG(LogTemp, Warning, TEXT("Wall Jump Failed"));
+	//return false; }
+
 
 		bool isHit = ActorLineTraceSingle(OutHit, Start, End, ECC_WorldStatic, collisionParams);
 
@@ -130,21 +143,32 @@ bool ANoir::TraceForward() {
 				GEngine->AddOnScreenDebugMessage(01, 1.f, FColor::Blue, FString::Printf(TEXT("The Comp being hit is : %s"),
 					*OutHit.GetComponent()->GetName()));
 				if (OutHit.GetActor()->ActorHasTag("Wall")) {
-					UE_LOG(LogTemp, Warning, TEXT("GET IN SIDE222"));
+					UE_LOG(LogTemp, Warning, TEXT("GET IN WALLLLLLLLL"));
 					return true;
 
+				}
+				else {
+					UE_LOG(LogTemp, Warning, TEXT("GET IN FALSEEEEEEE"));
 				}
 			}
 			
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("nothing happen!!"));
-		return false;
+		/*return false;*/
+		return true;
 }
 
 
 void ANoir::NoirActiveSkill1()
 { 
+	//애님 몽타주를 역으로 호출
+	auto Animinstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (Animinstance)
+	{
+		Animinstance->PlaySkillMontage();
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("ActiveSkill Activated"));
 	//Noir 스킬을 불러내어 spawn
 	//스킬에서 init할때 생성하며, 적군에 맞았을때, 스킬 발동

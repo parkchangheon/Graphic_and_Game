@@ -18,9 +18,12 @@ class PROJECTCHASER_API UMyAnimInstance : public UAnimInstance
 
 	
 public:
-	/*UMyAnimInstance();*/
-	/*void PlaySkillMontage();*/
-	/*UAnimMontage* NoirSkillMontage;*/
+	UMyAnimInstance();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* NoirSkillMontage;
+
+	void PlaySkillMontage();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float Speed;
@@ -28,5 +31,5 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	bool isFalling;
 
-	
+
 };
