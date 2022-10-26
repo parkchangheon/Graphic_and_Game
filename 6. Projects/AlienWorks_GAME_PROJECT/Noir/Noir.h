@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "NoirActiveSkill.h"
 #include "Character_Thief.h"
+#include "Net/UnrealNetwork.h"
 #include "Noir.generated.h"
+
 
 /**
  * 
@@ -38,6 +40,11 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	void NoirActiveSkill1();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_OnFire(FVector Location, FRotator Rotation);
+	void Server_OnFire_Implementation(FVector Location, FRotator Rotation);
+	bool Server_OnFire_Validate(FVector Location, FRotator Rotation);
 
 public:
 	UPROPERTY()

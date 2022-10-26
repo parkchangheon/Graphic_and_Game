@@ -26,7 +26,8 @@ ANoir::ANoir()
 
 	isJump = false;
 	jumpCount = 0;
-
+	
+	
 }
 
 void ANoir::BeginPlay()
@@ -169,17 +170,41 @@ void ANoir::NoirActiveSkill1()
 		Animinstance->PlaySkillMontage();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ActiveSkill Activated"));
+	UE_LOG(LogTemp, Warning, TEXT("Client _ ActiveSkill Activated"));
 	//Noir 스킬을 불러내어 spawn
 	//스킬에서 init할때 생성하며, 적군에 맞았을때, 스킬 발동
 
 	const FVector Location = GetActorLocation() + FVector(0, 0, 0);
 	//const FRotator Rotation = GetActorRotation();
 	const FRotator Rotation = GetControlRotation();
-	GetWorld()->SpawnActor<ANoirActiveSkill>(SkillOBJ, Location, Rotation);
 
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+	GetWorld()->SpawnActor<ANoirActiveSkill>(SkillOBJ, Location, Rotation, ActorSpawnParams);
+
+	if (!HasAuthority()) {
+		Server_OnFire(Location, Rotation);
+	}
+}
+
+
+void ANoir::Server_OnFire_Implementation(FVector Location, FRotator Rotation)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server_OnFire_Implementation"));
+
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	GetWorld()->SpawnActor<ANoirActiveSkill>(SkillOBJ, Location, Rotation, ActorSpawnParams);
 
 }
+
+
+bool ANoir::Server_OnFire_Validate(FVector Location, FRotator Rotation)
+{
+	return true;
+}
+
 
 
 
