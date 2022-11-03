@@ -15,6 +15,7 @@ import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.UnityAds;
+import com.unity3d.ads.UnityAdsBaseOptions;
 import com.unity3d.ads.UnityAdsShowOptions;
 
 import org.cocos2dx.lib.Cocos2dxHelper;
@@ -57,14 +58,13 @@ public class UnityAdsManager{
         @Override
         public void onUnityAdsAdLoaded(String placementId) {
             Log.d(TAG, " onUnityAdsAdLoaded");
-            //UnityAds.show(Cocos2dxHelper.getActivity(), adUnitId, new UnityAdsShowOptions(), showListener);
 
         }
 
         @Override
         public void onUnityAdsFailedToLoad(String placementId, UnityAds.UnityAdsLoadError unityAdsLoadError, String message) {
             Log.e(TAG, "Unity Ads failed to load ad for " + placementId + " with error: [" + unityAdsLoadError + "] " + message);
-
+            CallbackOnRewardAdFailToLoaded();
         }
     };
 
@@ -72,7 +72,9 @@ public class UnityAdsManager{
 
         @Override
         public void onUnityAdsShowFailure(String placementId, UnityAds.UnityAdsShowError error, String message) {
-            Log.e("UnityAdsExample", "Unity Ads failed to show ad for " + placementId + " with error: [" + error + "] " + message);
+            Log.e(TAG, "Unity Ads failed to show ad for " + placementId + " with error: [" + error + "] " + message);
+            CallBackFailRewardedVideoAd();
+
         }
 
         @Override
@@ -91,7 +93,19 @@ public class UnityAdsManager{
         public void onUnityAdsShowComplete(String s, UnityAds.UnityAdsShowCompletionState unityAdsShowCompletionState) {
             Log.d(TAG, "onUnityAdsShowComplete");
 
-            //끝나면 여기에다가 ~~~~ 할거다 ~~~~~ 적어주기.
+            //끝나면 여기에서 보상 지급 메소드를 넣어줌. -> UnityAdsComm
+            if(unityAdsShowCompletionState == UnityAds.UnityAdsShowCompletionState.COMPLETED)
+            {
+                CallBackReward(); //아싸리 reward 값을 true로 때려박아 넣어서 callbackonrewardadclosed를 호출안하게.
+                //CallBackOnRewardAdClosed();
+
+            }
+
+            else {
+
+            }
+
+            UnityAds.load(adUnitId, loadListener); //끝나면 load해준다.
 
         }
     };
@@ -119,7 +133,10 @@ public class UnityAdsManager{
 
 
     private static native void CallBackReward();
-
+    private static native void CallBackFailRewardedVideoAd();
+    private static native void CallBackOnRewardAdClosed();
+    private static native void CallBackOnRewardAdLoaded();
+    private static native void CallbackOnRewardAdFailToLoaded();
  /*   @Override
     public void onInitializationComplete() {
         Log.d(TAG, " onInitializationComplete");
