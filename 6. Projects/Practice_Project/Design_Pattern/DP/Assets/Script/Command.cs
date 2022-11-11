@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Command
+public class Command //명령을 내리는 객체~
 {
     public virtual void Execute(Actor actor) { }
     public virtual void Undo(Actor actor) { }
@@ -19,7 +19,12 @@ public class MoveLeft : Command
         prevPos = actor.transform.position;
         actor.Left(_movePos); 
     }
-    
+
+    public override void Undo(Actor actor)
+    {
+        actor.Left(prevPos);
+    }
+
 }
 
 public class MoveRight : Command

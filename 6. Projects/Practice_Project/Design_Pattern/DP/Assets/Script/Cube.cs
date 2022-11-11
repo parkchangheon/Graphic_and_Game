@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class Actor   //액터의 메소드들을 정의한다.
+public class Actor   //명령을 실행하는 객체?
 {
     public Vector3 pos = new Vector3(0, 0, 0);
     public Transform transform;
@@ -18,7 +18,6 @@ public class Actor   //액터의 메소드들을 정의한다.
         Debug.Log("Left");
         transform.position += pos;
     }
-
     public void Right(Vector3 pos) 
     {
         Debug.Log("Right");
@@ -34,9 +33,6 @@ public class Actor   //액터의 메소드들을 정의한다.
         Debug.Log("Down");
         transform.position += pos;
     }
-
-
-
     public void Fire() { Debug.Log("Fire"); }
     public void Jump() { Debug.Log("jump"); }
     public void Roll() { Debug.Log("Roll"); }
@@ -61,8 +57,11 @@ public class Cube : MonoBehaviour
 
     eBtn pressedBtn = eBtn.None;
     Command ML, MR, MU, MD, AJ, AF, AR, AS;
-    Actor actor;
+    [SerializeField] public Actor actor;
     [SerializeField] private float moveSpeed = 0.02f;
+    Stack<Command> stack = new Stack<Command>();
+    bool isPushUndoKey = false;
+
 
     void Start() {
         actor = new Actor(gameObject.transform); //여기에서 게임 오브젝트의 트랜스폼을 전달.
@@ -81,24 +80,41 @@ public class Cube : MonoBehaviour
         AS = new CommandSkill();
     }
 
-    void Update()
-    {
-        Command command = GetCommand();
-
-        if (command != null)
-        {
-            command.Execute(actor);
-        }
-            
-    }
-
     Command GetCommand()
     {
-        if (IsPressed(eBtn.left)) return ML;
-        else if (IsPressed(eBtn.right)) return MR;
-        else if (IsPressed(eBtn.up)) return MU;
-        else if (IsPressed(eBtn.down)) return MD;
-        else if (IsPressed(eBtn.jump)) return AJ;
+        if(Input.GetKey("z"))
+        {
+            isPushUndoKey = true;
+            if(stack.Count>0)
+            {
+                return stack.Pop();
+            }
+        }
+
+        if (IsPressed(eBtn.left))
+        {
+            stack.Push(ML); return ML;
+        }
+
+        else if (IsPressed(eBtn.right))
+        {
+            stack.Push(MR); return MR;
+        }
+
+        else if (IsPressed(eBtn.up))
+        {
+            stack.Push(MU); return MU;
+        }
+
+        else if (IsPressed(eBtn.down))
+        {
+            stack.Push(MD); return MD;
+        }
+        else if (IsPressed(eBtn.jump))
+        {
+            return AJ;
+        }
+
         else if (IsPressed(eBtn.roll)) return AR;
         else if (IsPressed(eBtn.fire)) return AF;
         else if (IsPressed(eBtn.skill)) return AS;
@@ -128,6 +144,22 @@ public class Cube : MonoBehaviour
             pressedBtn = eBtn.skill;
 
         return (btn == pressedBtn);
+    }
+
+
+    void Update()
+    {
+        isPushUndoKey = false;
+        Command command = GetCommand();
+
+        if (command != null)
+        {
+            if (isPushUndoKey)
+                command.Undo(actor);
+            else
+                command.Execute(actor);
+        }
+            
     }
 
 }
