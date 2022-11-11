@@ -16,7 +16,7 @@ public class Actor   //명령을 실행하는 객체?
     public void Left(Vector3 pos)
     {
         Debug.Log("Left");
-        transform.position += pos;
+        transform.Translate(pos * 150 * Time.deltaTime);
     }
     public void Right(Vector3 pos) 
     {
@@ -158,8 +158,7 @@ public class Cube : MonoBehaviour
                 command.Undo(actor);
             else
                 command.Execute(actor);
-        }
-            
+        }            
     }
 
 }
