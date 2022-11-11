@@ -5,27 +5,60 @@ using UnityEngine;
 public class Command
 {
     public virtual void Execute(Actor actor) { }
+    public virtual void Undo(Actor actor) { }
 }
 
 public class MoveLeft : Command
 {
-    public override void Execute(Actor actor) { actor.Left(); }
+    public MoveLeft(Vector3 movePos) { _movePos = movePos; }
+    Vector3 prevPos = Vector3.zero;
+    private Vector3 _movePos;
+
+    public override void Execute(Actor actor) 
+    {
+        prevPos = actor.transform.position;
+        actor.Left(_movePos); 
+    }
     
 }
 
 public class MoveRight : Command
 {
-    public override void Execute(Actor actor) { actor.Right(); }
+    public MoveRight(Vector3 movePos) { _movePos = movePos; }
+    Vector3 prevPos = Vector3.zero;
+    private Vector3 _movePos;
+
+    public override void Execute(Actor actor) 
+    {
+        prevPos = actor.transform.position;
+        actor.Right(_movePos); 
+    }
 }
 
 public class MoveUp : Command
 {
-    public override void Execute(Actor actor) { actor.Up(); }
+    public MoveUp(Vector3 movePos) { _movePos = movePos; }
+    Vector3 prevPos = Vector3.zero;
+    private Vector3 _movePos;
+
+    public override void Execute(Actor actor) 
+    {
+        prevPos = actor.transform.position;
+        actor.Up(_movePos); 
+    }
 }
 
 public class MoveDown : Command
 {
-    public override void Execute(Actor actor) { actor.Down(); }
+    public MoveDown(Vector3 movePos) { _movePos = movePos; }
+    Vector3 prevPos = Vector3.zero;
+    private Vector3 _movePos;
+
+    public override void Execute(Actor actor) 
+    {
+        prevPos = actor.transform.position;
+        actor.Down(_movePos); 
+    }
 }
 
 public class CommandFire : Command

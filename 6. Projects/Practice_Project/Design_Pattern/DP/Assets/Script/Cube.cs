@@ -2,12 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class Actor   //액터의 메소드들을 정의한다.
 {
-    public void Left() { Debug.Log("Left"); }
-    public void Right() { Debug.Log("Right"); }
-    public void Up() { Debug.Log("Up"); }
-    public void Down() { Debug.Log("Down"); }
+    public Vector3 pos = new Vector3(0, 0, 0);
+    public Transform transform;
+    public Actor(Transform tr)
+    {
+        transform = tr;
+    }
+
+    public void Left(Vector3 pos)
+    {
+        Debug.Log("Left");
+        transform.position += pos;
+    }
+
+    public void Right(Vector3 pos) 
+    {
+        Debug.Log("Right");
+        transform.position += pos;
+    }
+    public void Up(Vector3 pos) 
+    { 
+        Debug.Log("Up");
+        transform.position += pos;
+    }
+    public void Down(Vector3 pos) 
+    {
+        Debug.Log("Down");
+        transform.position += pos;
+    }
+
+
 
     public void Fire() { Debug.Log("Fire"); }
     public void Jump() { Debug.Log("jump"); }
@@ -34,17 +62,18 @@ public class Cube : MonoBehaviour
     eBtn pressedBtn = eBtn.None;
     Command ML, MR, MU, MD, AJ, AF, AR, AS;
     Actor actor;
+    [SerializeField] private float moveSpeed = 0.02f;
 
     void Start() {
-        actor = new Actor();
+        actor = new Actor(gameObject.transform); //여기에서 게임 오브젝트의 트랜스폼을 전달.
         setCommand();
     }
 
     void setCommand(){
-        ML = new MoveLeft();
-        MR = new MoveRight();
-        MU = new MoveUp();
-        MD = new MoveDown();
+        ML = new MoveLeft(new Vector3(-moveSpeed, 0, 0));
+        MR = new MoveRight(new Vector3(moveSpeed, 0, 0));
+        MU = new MoveUp(new Vector3(0, moveSpeed, 0));
+        MD = new MoveDown(new Vector3(0, -moveSpeed, 0));
 
         AF = new CommandFire();
         AJ = new CommandJump();
@@ -55,8 +84,12 @@ public class Cube : MonoBehaviour
     void Update()
     {
         Command command = GetCommand();
+
         if (command != null)
+        {
             command.Execute(actor);
+        }
+            
     }
 
     Command GetCommand()
