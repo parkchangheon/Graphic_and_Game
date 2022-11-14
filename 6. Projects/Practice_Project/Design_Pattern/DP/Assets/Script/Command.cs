@@ -10,59 +10,37 @@ public class Command //명령을 내리는 객체~
 
 public class MoveLeft : Command
 {
-    public MoveLeft(Vector3 movePos) { _movePos = movePos; }
-    Vector3 prevPos = Vector3.zero;
-    private Vector3 _movePos;
-
+    public MoveLeft() { }
     public override void Execute(Actor actor) 
     {
-        prevPos = actor.transform.position;
-        actor.Left(_movePos); 
+        actor.Left(); 
     }
-
-    public override void Undo(Actor actor)
-    {
-        actor.Left(prevPos);
-    }
-
 }
 
 public class MoveRight : Command
 {
-    public MoveRight(Vector3 movePos) { _movePos = movePos; }
-    Vector3 prevPos = Vector3.zero;
-    private Vector3 _movePos;
-
+    public MoveRight() { }
     public override void Execute(Actor actor) 
     {
-        prevPos = actor.transform.position;
-        actor.Right(_movePos); 
+        actor.Right(); 
     }
 }
 
 public class MoveUp : Command
 {
-    public MoveUp(Vector3 movePos) { _movePos = movePos; }
-    Vector3 prevPos = Vector3.zero;
-    private Vector3 _movePos;
-
+    public MoveUp() { }
     public override void Execute(Actor actor) 
     {
-        prevPos = actor.transform.position;
-        actor.Up(_movePos); 
+        actor.Up(); 
     }
 }
 
 public class MoveDown : Command
 {
-    public MoveDown(Vector3 movePos) { _movePos = movePos; }
-    Vector3 prevPos = Vector3.zero;
-    private Vector3 _movePos;
-
+    public MoveDown() { }
     public override void Execute(Actor actor) 
     {
-        prevPos = actor.transform.position;
-        actor.Down(_movePos); 
+        actor.Down(); 
     }
 }
 

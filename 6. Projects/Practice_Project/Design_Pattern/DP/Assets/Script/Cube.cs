@@ -6,32 +6,33 @@ using UnityEngine;
 
 public class Actor   //명령을 실행하는 객체?
 {
-    public Vector3 pos = new Vector3(0, 0, 0);
-    public Transform transform;
-    public Actor(Transform tr)
+    private Rigidbody2D rigid;
+    float moveSpeed = 4f;
+    public Actor(Rigidbody2D rd)
     {
-        transform = tr;
+        rigid = rd;
     }
 
-    public void Left(Vector3 pos)
+    public void Left()
     {
+        rigid.velocity = new Vector3(-moveSpeed, 0, 0);
         Debug.Log("Left");
-        transform.Translate(pos * 150 * Time.deltaTime);
+       
     }
-    public void Right(Vector3 pos) 
+    public void Right() 
     {
+        rigid.velocity = new Vector3(moveSpeed, 0, 0);
         Debug.Log("Right");
-        transform.position += pos;
     }
-    public void Up(Vector3 pos) 
-    { 
-        Debug.Log("Up");
-        transform.position += pos;
-    }
-    public void Down(Vector3 pos) 
+    public void Up() 
     {
+        rigid.velocity = new Vector3(0, moveSpeed, 0);
+        Debug.Log("Up");
+    }
+    public void Down() 
+    {
+        rigid.velocity = new Vector3(0, -moveSpeed, 0);
         Debug.Log("Down");
-        transform.position += pos;
     }
     public void Fire() { Debug.Log("Fire"); }
     public void Jump() { Debug.Log("jump"); }
@@ -58,21 +59,22 @@ public class Cube : MonoBehaviour
     eBtn pressedBtn = eBtn.None;
     Command ML, MR, MU, MD, AJ, AF, AR, AS;
     [SerializeField] public Actor actor;
-    [SerializeField] private float moveSpeed = 0.02f;
     Stack<Command> stack = new Stack<Command>();
     bool isPushUndoKey = false;
+    private Rigidbody2D rigid;
 
 
     void Start() {
-        actor = new Actor(gameObject.transform); //여기에서 게임 오브젝트의 트랜스폼을 전달.
+        rigid = GetComponent<Rigidbody2D>();
+        actor = new Actor(rigid); //여기에서 게임 오브젝트의 트랜스폼을 전달.
         setCommand();
     }
 
     void setCommand(){
-        ML = new MoveLeft(new Vector3(-moveSpeed, 0, 0));
-        MR = new MoveRight(new Vector3(moveSpeed, 0, 0));
-        MU = new MoveUp(new Vector3(0, moveSpeed, 0));
-        MD = new MoveDown(new Vector3(0, -moveSpeed, 0));
+        ML = new MoveLeft();
+        MR = new MoveRight();
+        MU = new MoveUp();
+        MD = new MoveDown();
 
         AF = new CommandFire();
         AJ = new CommandJump();
@@ -151,7 +153,7 @@ public class Cube : MonoBehaviour
     {
         isPushUndoKey = false;
         Command command = GetCommand();
-
+        rigid.velocity = Vector2.zero;
         if (command != null)
         {
             if (isPushUndoKey)
