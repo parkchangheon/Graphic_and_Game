@@ -7,10 +7,12 @@ using UnityEngine;
 public class Actor   //명령을 실행하는 객체?
 {
     private Rigidbody2D rigid;
+    private Animator anim;
     float moveSpeed = 4f;
-    public Actor(Rigidbody2D rd)
+    public Actor(Rigidbody2D rd, Animator am)
     {
         rigid = rd;
+        anim = am;
     }
 
     public void Left()
@@ -62,13 +64,15 @@ public class Cube : MonoBehaviour
     Stack<Command> stack = new Stack<Command>();
     bool isPushUndoKey = false;
     private Rigidbody2D rigid;
-
+    private Animator anim;
 
     void Start() {
         rigid = GetComponent<Rigidbody2D>();
-        actor = new Actor(rigid); //여기에서 게임 오브젝트의 트랜스폼을 전달.
+        anim = GetComponent<Animator>();
+        actor = new Actor(rigid, anim); //여기에서 게임 오브젝트의 트랜스폼을 전달.
         setCommand();
     }
+
 
     void setCommand(){
         ML = new MoveLeft();
