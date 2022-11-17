@@ -9,6 +9,14 @@ public class Actor   //명령을 실행하는 객체?
     private Rigidbody2D rigid;
     private Animator anim;
     float moveSpeed = 4f;
+
+    bool isHorizonMove;
+
+    bool hDown = Input.GetButtonDown("Horizontal");
+    bool vDown = Input.GetButtonDown("Vertical");
+    bool hUp = Input.GetButtonDown("Horizontal");
+    bool vUp = Input.GetButtonDown("Vertical");
+
     public Actor(Rigidbody2D rd, Animator am)
     {
         rigid = rd;
@@ -18,22 +26,34 @@ public class Actor   //명령을 실행하는 객체?
     public void Left()
     {
         rigid.velocity = new Vector3(-moveSpeed, 0, 0);
+        anim.SetInteger("HAxis_Raw", -1);
+        anim.SetInteger("VAxis_Raw", 0);
+
         Debug.Log("Left");
        
     }
     public void Right() 
     {
         rigid.velocity = new Vector3(moveSpeed, 0, 0);
+        anim.SetInteger("HAxis_Raw", 1);
+        anim.SetInteger("VAxis_Raw", 0);
+
         Debug.Log("Right");
     }
     public void Up() 
     {
         rigid.velocity = new Vector3(0, moveSpeed, 0);
+        anim.SetInteger("VAxis_Raw", 1);
+        anim.SetInteger("HAxis_Raw", 0);
+
         Debug.Log("Up");
     }
     public void Down() 
     {
         rigid.velocity = new Vector3(0, -moveSpeed, 0);
+        anim.SetInteger("VAxis_Raw", -1);
+        anim.SetInteger("HAxis_Raw", 0);
+
         Debug.Log("Down");
     }
     public void Fire() { Debug.Log("Fire"); }
