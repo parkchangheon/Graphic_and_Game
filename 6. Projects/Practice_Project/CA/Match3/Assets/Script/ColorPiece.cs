@@ -21,7 +21,7 @@ public class ColorPiece : MonoBehaviour
     {
         public ColorType color;
         public Sprite sprite;
-    }
+    };
 
     public ColorSprite[] colorSprites;
     private ColorType color;
@@ -39,7 +39,7 @@ public class ColorPiece : MonoBehaviour
     private Dictionary<ColorType, Sprite> colorSpriteDict;
 
     void Awake()
-    {
+    { 
         sprite = transform.Find("piece").GetComponent<SpriteRenderer>();
         colorSpriteDict = new Dictionary<ColorType, Sprite>();
         for(int i=0; i< colorSprites.Length; i++)

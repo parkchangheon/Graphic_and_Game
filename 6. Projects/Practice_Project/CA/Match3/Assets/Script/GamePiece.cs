@@ -8,7 +8,7 @@ public class GamePiece : MonoBehaviour
     private int y;
     private Grid grid;
     private Grid.PieceType type;
-    public MovablePiece movableComponent;
+    private MovablePiece movableComponent;
     public ColorPiece colorComponent;
 
     public int X
@@ -63,6 +63,20 @@ public class GamePiece : MonoBehaviour
         grid = _grid;
         type = _type;
     }
+
+    private void OnMouseEnter()
+    {
+        grid.EnterPiece(this);   
+    }
+    private void OnMouseDown()
+    {
+        grid.PreddPiece(this);
+    }
+    private void OnMouseUp()
+    {
+        grid.ReleasePiece();
+    }
+
     public bool IsMovable()
     {
         return movableComponent != null;

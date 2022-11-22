@@ -238,10 +238,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   piecePrefabs:
   - type: 0
-    prefab: {fileID: 3761719150528077706, guid: 4554b1a0f5ae22544807f497ec3c0904, type: 3}
+    prefab: {fileID: 1813572634884006137, guid: 591cf236c24702a4b898355f600353a4, type: 3}
+  - type: 1
+    prefab: {fileID: 4979680383228078667, guid: 5b4c2701cc83c204ba8c5982d44da11f, type: 3}
+  - type: 2
+    prefab: {fileID: 6119454076617389000, guid: 13afb3ec5922dec4b972537ac57f0065, type: 3}
   backGroundPrefab: {fileID: 466440391415330408, guid: 5f61696c1fa3bbe4ba4613df05188139, type: 3}
   xDim: 7
   yDim: 6
+  fillTime: 0.2
 --- !u!4 &1746700840
 Transform:
   m_ObjectHideFlags: 0
