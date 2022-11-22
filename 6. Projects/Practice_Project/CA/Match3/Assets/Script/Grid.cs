@@ -290,7 +290,7 @@ public class Grid : MonoBehaviour
                     matchingpieces.Add(horizontalPieces[i]);
             }
 
-            if (horizontalPieces.Count >= 3)
+/*            if (horizontalPieces.Count >= 3)
             {
                 for (int i = 0; i < horizontalPieces.Count; i++)
                 {
@@ -330,9 +330,9 @@ public class Grid : MonoBehaviour
                         break;
                     }
                 }
-            }
+            }*/
 
-            if (matchingpieces.Count >= 3) {
+            if (matchingpieces.Count >= 3){
                 return matchingpieces;
             }
             
