@@ -77,11 +77,19 @@ public class Grid : MonoBehaviour
 
     public IEnumerator Fill()
     {
-        while(FillStep())
+        bool needsRefill = true;
+        while (needsRefill)
         {
-            avoidance = !avoidance;
             yield return new WaitForSeconds(fillTime);
+
+            while (FillStep())
+            {
+                avoidance = !avoidance;
+                yield return new WaitForSeconds(fillTime);
+            }
+            needsRefill = ClearAllValidMatches();
         }
+        
     }
     public bool FillStep()
     {
@@ -221,6 +229,9 @@ public class Grid : MonoBehaviour
 
                 piece1.MovableComponent.Move(piece2.X, piece2.Y, fillTime);
                 piece2.MovableComponent.Move(piece1X, piece1Y, fillTime);
+
+                ClearAllValidMatches();
+                StartCoroutine(Fill());
             }
             else{
                 pieces[piece1.X, piece1.Y] = piece1;
@@ -290,7 +301,7 @@ public class Grid : MonoBehaviour
                     matchingpieces.Add(horizontalPieces[i]);
             }
 
-/*            if (horizontalPieces.Count >= 3)
+            if (horizontalPieces.Count >= 3)
             {
                 for (int i = 0; i < horizontalPieces.Count; i++)
                 {
@@ -310,8 +321,8 @@ public class Grid : MonoBehaviour
                                 break;
 
 
-                            if (pieces[horizontalPieces[i].X, y].ColorComponent.Color == color)
-                                VerticalPieces.Add(pieces[horizontalPieces[i].X, y]);
+                            if (pieces[newX, y].IsColored() && pieces[newX, y].ColorComponent.Color == color)
+                                VerticalPieces.Add(pieces[horizontalPieces[i].X,y]);
                             else
                                 break;
                             
@@ -330,15 +341,22 @@ public class Grid : MonoBehaviour
                         break;
                     }
                 }
-            }*/
+            }
 
             if (matchingpieces.Count >= 3){
                 return matchingpieces;
             }
-            
+
+
+
+
+
+
 
 
             //vertical
+            horizontalPieces.Clear();
+            VerticalPieces.Clear();
             VerticalPieces.Add(piece);
 
             for (int dir = 0; dir <= 1; dir++)
@@ -371,11 +389,101 @@ public class Grid : MonoBehaviour
                     matchingpieces.Add(VerticalPieces[i]);
             }
 
+
+
+
+            if (VerticalPieces.Count >= 3)
+            {
+                for (int i = 0; i < VerticalPieces.Count; i++)
+                {
+                    for (int dir = 0; dir <= 1; dir++)
+                    {
+                        for (int xOffset = 1; xOffset < xDim; xOffset++)
+                        {
+                            int x;
+
+                            if (dir == 0)
+                                x = newX - xOffset;
+
+                            else
+                                x = newX + xOffset;
+
+                            if (x < 0 || x >= xDim)
+                                break;
+
+
+                            if (pieces[x, VerticalPieces[i].Y].IsColored() && pieces[x, VerticalPieces[i].Y].ColorComponent.Color == color)
+                                VerticalPieces.Add(pieces[x, VerticalPieces[i].Y]);
+                            else
+                                break;
+                             
+                        }
+                    }
+
+                    if (VerticalPieces.Count < 2)
+                        VerticalPieces.Clear();
+
+                    else
+                    {
+                        for (int j = 0; j < horizontalPieces.Count; j++)
+
+                            matchingpieces.Add(horizontalPieces[j]);
+
+                        break;
+                    }
+                }
+            }
+
+
+
             if (matchingpieces.Count >= 3)
                 return matchingpieces;
             
         }
         return null;
     }
+
+
+    public bool ClearAllValidMatches()
+    {
+        bool needsRefill = false;
+
+        for(int y = 0; y<yDim; y++)
+        {
+            for(int x =0; x < xDim; x++)
+            {
+                if (pieces[x, y].IsClearable())
+                {
+                    List<GamePiece> match = GetMatch(pieces[x, y], x, y);
+                
+                    if(match != null)
+                    {
+                        for(int i=0;i<match.Count; i++)
+                        {
+                            if(ClearPiece(match[i].X, match[i].Y))
+                            {
+                                needsRefill = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return needsRefill;
+    }
+
+
+    public bool ClearPiece(int x, int y)
+    {
+        if (pieces[x, y].IsClearable() && !pieces[x, y].ClearableComponent.IsBeingCleared)
+        {
+            pieces[x, y].ClearableComponent.Clear();
+            SpawnNewPiece(x, y, PieceType.EMPTY);
+
+            return true;
+        }
+        return false;
+    }
+
 
 }

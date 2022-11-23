@@ -176,7 +176,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -246,7 +246,7 @@ MonoBehaviour:
   backGroundPrefab: {fileID: 466440391415330408, guid: 5f61696c1fa3bbe4ba4613df05188139, type: 3}
   xDim: 7
   yDim: 6
-  fillTime: 0.2
+  fillTime: 0.3
 --- !u!4 &1746700840
 Transform:
   m_ObjectHideFlags: 0
@@ -255,7 +255,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1746700838}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
