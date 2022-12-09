@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BasicTest/Scenes/FlyUnder.unity
     guid: 931a495ebd069b44db849928f136253e
+  - enabled: 1
+    path: Assets/BasicTest/Scenes/Stage3.unity
+    guid: 43bd4c4c7aa098345bc0d081e7493b6d
   m_configObjects: {}
