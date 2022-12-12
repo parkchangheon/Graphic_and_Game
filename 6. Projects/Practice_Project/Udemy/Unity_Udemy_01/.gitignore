@@ -50,6 +50,11 @@ ExportedObj/
 *.asset
 *.png
 *.mat
+*.psd
+*.shader
+*.terrainlayer
+*.fbx
+*.prefab
 
 # Unity3D generated meta files
 *.pidb.meta
