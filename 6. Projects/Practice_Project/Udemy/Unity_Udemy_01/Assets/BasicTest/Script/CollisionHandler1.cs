@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CollisionHandler : MonoBehaviour
+public class CollisionHandler1 : MonoBehaviour
 {
 
     [SerializeField] float levelLoadDelay = 0.5f;
