@@ -55,6 +55,7 @@ ExportedObj/
 *.terrainlayer
 *.fbx
 *.prefab
+*.unity
 
 # Unity3D generated meta files
 *.pidb.meta
