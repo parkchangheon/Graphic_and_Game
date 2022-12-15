@@ -1152,7 +1152,7 @@ PrefabInstance:
     - target: {fileID: 28, guid: 590d678807f2a5e43901a5c67f692a8c, type: 3}
       propertyPath: audioshoot
       value: 
-      objectReference: {fileID: 8300000, guid: 16b85d217e0383541b575c6297dc06bd, type: 3}
+      objectReference: {fileID: 672020463}
     - target: {fileID: 28, guid: 590d678807f2a5e43901a5c67f692a8c, type: 3}
       propertyPath: audioSource
       value: 

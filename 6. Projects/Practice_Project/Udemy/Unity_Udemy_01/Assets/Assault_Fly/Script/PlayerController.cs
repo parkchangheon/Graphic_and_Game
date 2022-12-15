@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
         ProcessTranslation();
         ProcessRotation();
         ProcessFiring();
-        
+        ExitGame();
     }
 
     void ProcessRotation()
@@ -102,6 +102,21 @@ public class PlayerController : MonoBehaviour
     {
         audioshoot.Play();
        
+    }
+
+    void ExitGame()
+    {
+
+
+        if (Input.GetKey("escape"))
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+        
+#endif
+        }
     }
 
 }
