@@ -21,13 +21,16 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Add all player laser here")]
     [SerializeField] GameObject[] lasers;
 
+    [SerializeField] AudioClip audioClip;
+    [SerializeField] AudioSource audioshoot;
+
+
     float xThrow;
     float yThrow;
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -36,6 +39,7 @@ public class PlayerController : MonoBehaviour
         ProcessTranslation();
         ProcessRotation();
         ProcessFiring();
+        
     }
 
     void ProcessRotation()
@@ -75,7 +79,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetButton("Fire1"))
         {
             ActivateLaser(true);
-            
+            ShootSFX();
         }
         else
         {
@@ -89,9 +93,15 @@ public class PlayerController : MonoBehaviour
         {
             var emissionModule = laser.GetComponent<ParticleSystem>().emission;
             emissionModule.enabled = isactivate;
+            
         }
+        
     }
 
-
+    void ShootSFX()
+    {
+        audioshoot.Play();
+       
+    }
 
 }
