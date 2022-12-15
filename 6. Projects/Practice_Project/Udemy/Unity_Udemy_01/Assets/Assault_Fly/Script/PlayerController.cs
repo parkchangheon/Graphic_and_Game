@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetButton("Fire1"))
         {
             ActivateLaser(true);
+            
         }
         else
         {
