@@ -25,7 +25,8 @@ public class Bank : MonoBehaviour
     public void WithDraw(int amount)
     {
         currentBalance -= Mathf.Abs(amount);
-        if(currentBalance < 0 )
+        UpdateDisplay();
+        if (currentBalance < 0 )
         {
             //we lose game
         }
