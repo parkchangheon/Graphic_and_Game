@@ -37,6 +37,19 @@ int main()
 	//double value2 = ObjectType::Player; //암묵적인 변환 x 
 	double value2 = static_cast<double>(ObjectType::Player); //암묵적인 변환 x 
 
+	int choice;
+	cin >> choice;
+
+	if (choice == Knight)
+	{
+
+	}
+
+	if (choice == static_cast<int>(ObjectType::Player)) //enum클래스 (ObjectType::Player) 로 작성시 에러를 뱉음. 
+	{
+
+	}
+
 
 	return 0;
 }
