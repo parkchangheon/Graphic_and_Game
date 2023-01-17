@@ -24,6 +24,11 @@ protected:
 	void LookUpAtRate(float Rate);
 	void FireWeapon();
 
+	//Set Aiming true, false
+	void AimingButtonPressed();
+	void AimingButtonReleased();
+	void CameraInterpZoom(float DeltaTime);
+
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 
 public:	
@@ -63,6 +68,16 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* BeamParticles;;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess =  "true"))
+	bool bAiming;
+
+	float CameraDefaultFOV;   //디폴트 카메라 필드
+	float CameraZoomedFOV;    //줌인 되었을때 
+	float CameraCurrentFOV;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float ZoomInterSpeed;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; } //간단한 것에 FORCEINLINE을 써줌.
