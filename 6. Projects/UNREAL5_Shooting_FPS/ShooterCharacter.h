@@ -33,6 +33,13 @@ protected:
 	void SetLookRates();
 	void CalculateCrosshairSpread(float DeltaTime);
 
+	//AutoFireMethod
+	void FireButtonPressed();
+	void FireButtonReleased();
+	void StartFireTimer();
+	UFUNCTION()
+	void AutoFireReset();
+
 	void StartCrosshairBulletFire();
 
 	UFUNCTION()
@@ -130,6 +137,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor; //사격시 조준자 펼치기
+
+
+	bool bFireButtonPressed;
+	bool bShouldFire;
+	float AutomaticFireRate; // rate of automatic fire
+	FTimerHandle AutoFireTimer; //set a timer between gunshots
+
 
 	float ShootTimeDuration;
 	bool bFiringBullet;
