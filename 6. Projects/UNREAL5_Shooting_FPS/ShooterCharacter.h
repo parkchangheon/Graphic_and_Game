@@ -46,6 +46,12 @@ protected:
 	void FinishCrosshairBulletFire();
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 
+	//Linetrace for item under the crosshair
+	bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
+	
+	//Trace For Item if OverlappedItemCount>0
+	void TraceForItems();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -143,7 +149,8 @@ private:
 	bool bShouldFire;
 	float AutomaticFireRate; // rate of automatic fire
 	FTimerHandle AutoFireTimer; //set a timer between gunshots
-
+	bool bShouldTraceForItems;
+	int8 OverlappedItemCount;
 
 	float ShootTimeDuration;
 	bool bFiringBullet;
@@ -158,4 +165,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
+	 
+	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
+
+	//Add / substract to/from ItemCount and updated bShouldTraceForItems
+	void IncreamentOverlappedItemCount(int8 Amount); //add or attract item
+
+
 };
