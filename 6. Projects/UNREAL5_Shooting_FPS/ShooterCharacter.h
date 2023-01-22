@@ -51,6 +51,8 @@ protected:
 	
 	//Trace For Item if OverlappedItemCount>0
 	void TraceForItems();
+
+	void SpawnDefaultWeapon();
 	
 public:	
 	// Called every frame
@@ -156,6 +158,8 @@ private:
 	bool bFiringBullet;
 	FTimerHandle CrossHairShootTimer;
 
+
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; } //간단한 것에 FORCEINLINE을 써줌.
 	//GetCameraBoom을 써주는 대신, CamraBoom을 대체해서 대입.
@@ -166,7 +170,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 	 
-	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
+	int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"));
+	class AItem* TraceHitItemLastFrame;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class AWeapon* EquippedWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AWeapon> DefaultWeaponClass;
 
 	//Add / substract to/from ItemCount and updated bShouldTraceForItems
 	void IncreamentOverlappedItemCount(int8 Amount); //add or attract item

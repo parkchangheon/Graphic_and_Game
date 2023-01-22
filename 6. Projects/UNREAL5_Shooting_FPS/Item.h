@@ -6,6 +6,18 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemRarity : uint8
+{
+	EIR_Damaged UMETA(DisplayName = "Damaged"),
+	EIR_Common UMETA(DisplayName = "Common"),
+	EIR_Uncommon UMETA(DisplayName = "Uncommon"),
+	EIR_Rare UMETA(DisplayName = "Rare"),
+	EIR_Legendary UMETA(DisplayName = "Legendary"),
+	EIR_Max UMETA(DisplayName = "DefaultMax")
+
+};
+
 UCLASS()
 class SHOOTERGAME_PRO_API AItem : public AActor
 {
@@ -34,6 +46,8 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
+	void SetActiveStarts();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -55,6 +69,18 @@ private:
 	//아이템 오버랩 되었을때 보이게 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* AreaSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	FString ItemName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	int32 ItemCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	EItemRarity ItemRarity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	TArray<bool> ActiveStars;
 
 public:
 	FORCEINLINE UWidgetComponent* GetPickUpWidget() const { return PickUpWidget; }

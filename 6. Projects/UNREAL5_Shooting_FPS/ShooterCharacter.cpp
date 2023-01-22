@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Item.h"
 #include "Components/WidgetComponent.h"
+#include "Weapon.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :BaseTurnRate(45.f), BaseLookUpRate(45.f), bAiming(false),
@@ -59,6 +60,7 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+	SpawnDefaultWeapon();
 }
 
 // Called every frame
@@ -529,6 +531,40 @@ void AShooterCharacter::TraceForItems()
 				// Show Item PickUpWidget
 				HitItem->GetPickUpWidget()->SetVisibility(true);
 			}
+
+			//we hit an AItem last frame
+			if (TraceHitItemLastFrame)
+			{
+				if (HitItem != TraceHitItemLastFrame)  //우리가 마지막으로 hit trace한 아이템과 현재 가리키는것이 다르다면
+				{//혹은 아무것도 가리키고 있지 않거나!
+					TraceHitItemLastFrame->GetPickUpWidget()->SetVisibility(false);
+				}
+			}
+
+			//Store Reference to HitItem for next frame
+			TraceHitItemLastFrame = HitItem;
 		}
 	}
+
+	else if (TraceHitItemLastFrame)
+	{
+		//No longer overlapping any Items
+		TraceHitItemLastFrame->GetPickUpWidget()->SetVisibility(false);
+	}
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	if (DefaultWeaponClass)
+	{
+		AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+		
+		if (HandSocket)
+		{
+			HandSocket->AttachActor(DefaultWeapon, GetMesh());
+		}
+	}
+
 }
