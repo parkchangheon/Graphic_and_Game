@@ -18,6 +18,22 @@ enum class EItemRarity : uint8
 
 };
 
+
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_PickUp UMETA(DisplayName = "Pickup"),
+	EIS_EquipInterping UMETA(DisplayName = "Pickup"),
+	EIS_PickedUp UMETA(DisplayName = "Pickup"),
+	EIS_Equipped UMETA(DisplayName = "Equipped"),
+	EIS_Falling UMETA(DisplayName = "Falling"),
+	EIS_MAX UMETA(DisplayName = "DefaultMax"),
+
+
+
+
+};
+
 UCLASS()
 class SHOOTERGAME_PRO_API AItem : public AActor
 {
@@ -47,6 +63,7 @@ protected:
 		int32 OtherBodyIndex);
 
 	void SetActiveStarts();
+	void SetItemProperties(EItemState State);
 
 public:	
 	// Called every frame
@@ -82,8 +99,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
 	TArray<bool> ActiveStars;
 
+	//아이템 버리고 주울때 사용
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	EItemState ItemState;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickUpWidget() const { return PickUpWidget; }
-
-	
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
+	FORCEINLINE EItemState GetItemState() const { return ItemState; }
+	void SetItemState(EItemState State);
+	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
 };

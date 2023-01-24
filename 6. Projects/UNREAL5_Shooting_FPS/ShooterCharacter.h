@@ -52,7 +52,12 @@ protected:
 	//Trace For Item if OverlappedItemCount>0
 	void TraceForItems();
 
-	void SpawnDefaultWeapon();
+	class AWeapon* SpawnDefaultWeapon();
+	void EquipWeapon(AWeapon* WeaponToEquip);
+	void DropWeapon();
+	void SelecButtonPressed();
+	void SelectButtonReleased();
+
 	
 public:	
 	// Called every frame
@@ -176,7 +181,7 @@ public:
 	class AItem* TraceHitItemLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"));
-	class AWeapon* EquippedWeapon;
+	AWeapon* EquippedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon> DefaultWeaponClass;

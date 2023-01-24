@@ -13,6 +13,8 @@
 #include "Item.h"
 #include "Components/WidgetComponent.h"
 #include "Weapon.h"
+#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() :BaseTurnRate(45.f), BaseLookUpRate(45.f), bAiming(false),
@@ -60,7 +62,7 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
-	SpawnDefaultWeapon();
+	EquipWeapon(SpawnDefaultWeapon());
 }
 
 // Called every frame
@@ -95,7 +97,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &AShooterCharacter::AimingButtonReleased);
-
+	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &AShooterCharacter::SelecButtonPressed);
+	PlayerInputComponent->BindAction("Select", IE_Released, this, &AShooterCharacter::SelectButtonReleased);
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
@@ -553,18 +556,51 @@ void AShooterCharacter::TraceForItems()
 	}
 }
 
-void AShooterCharacter::SpawnDefaultWeapon()
+AWeapon* AShooterCharacter::SpawnDefaultWeapon()
 {
 	if (DefaultWeaponClass)
 	{
-		AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+		return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+	}
+	return nullptr;
+}
 
+
+
+void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (WeaponToEquip)
+	{ 
 		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
 		
+
 		if (HandSocket)
 		{
-			HandSocket->AttachActor(DefaultWeapon, GetMesh());
+			HandSocket->AttachActor(WeaponToEquip, GetMesh());
 		}
+
+		EquippedWeapon = WeaponToEquip;
+		EquippedWeapon->SetItemState(EItemState::EIS_Equipped); //여기서 총기 든 상태를 설정 -> item
 	}
+
+
+}
+
+void AShooterCharacter::DropWeapon()
+{
+	if (EquippedWeapon) 
+	{
+		FDetachmentTransformRules DetachmentTransfromRules(EDetachmentRule::KeepWorld, true);
+		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransfromRules);
+	}
+}
+
+void AShooterCharacter::SelecButtonPressed()
+{
+	DropWeapon();
+}
+
+void AShooterCharacter::SelectButtonReleased()
+{
 
 }
