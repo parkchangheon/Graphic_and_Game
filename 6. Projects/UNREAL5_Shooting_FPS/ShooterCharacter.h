@@ -57,7 +57,7 @@ protected:
 	void DropWeapon();
 	void SelecButtonPressed();
 	void SelectButtonReleased();
-
+	void SwapWeapon(AWeapon* WeaponToSwap); // drop current weapon and equip new one
 	
 public:	
 	// Called every frame
@@ -186,8 +186,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 
+	//Item currently hit by our trace ( could be  null) ==> 아이템에 부딫힐때만 작동
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItem;
+
+	//Distance Outward from the camera for the interp Distination
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	float CameraInterpDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	float CameraInterpElevation;
+
 	//Add / substract to/from ItemCount and updated bShouldTraceForItems
 	void IncreamentOverlappedItemCount(int8 Amount); //add or attract item
 
+	FVector GetCameraInterpLocation();
+
+	void GetPickupItem(AItem* Item);
 
 };

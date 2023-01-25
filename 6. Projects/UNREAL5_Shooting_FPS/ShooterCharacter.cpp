@@ -24,7 +24,8 @@ MouseHipTurnRate(1.0f), MouseHipLookUpRate(1.0f), MouseAimingTurnRate(0.2f), Mou
 CrosshairSpreadMultiplier(0.f), CrosshairVelocityFactor(0.f), CrosshairInAirFactor(0.f), CrosshairAimFactor(0.f), CrosshairShootingFactor(0.f),
 ShootTimeDuration(0.05f), bFiringBullet(false),
 AutomaticFireRate(0.1f),bShouldFire(true), bFireButtonPressed(false),
-bShouldTraceForItems(false)
+bShouldTraceForItems(false),
+CameraInterpDistance(250.f), CameraInterpElevation(65.f)
 
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -116,6 +117,24 @@ void AShooterCharacter::IncreamentOverlappedItemCount(int8 Amount)
 	else {
 		OverlappedItemCount += Amount;
 		bShouldTraceForItems = true;
+	}
+}
+
+FVector AShooterCharacter::GetCameraInterpLocation()
+{
+	const FVector CameraLocation{ FollowCamera->GetComponentLocation() };
+	const FVector CameraForward{ FollowCamera->GetForwardVector() };
+	//목표하는 위치 = 카메라월드(location) + Forward * A + Up * B
+
+	return CameraLocation + CameraForward * CameraInterpDistance + FVector(0.f, 0.f, CameraInterpElevation);
+}
+
+void AShooterCharacter::GetPickupItem(AItem* Item)
+{
+	auto Weapon = Cast<AWeapon>(Item);
+	if (Weapon)
+	{
+		SwapWeapon(Weapon);
 	}
 }
 
@@ -528,24 +547,24 @@ void AShooterCharacter::TraceForItems()
 
 		if (ItemTraceResult.bBlockingHit)
 		{
-			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (HitItem && HitItem->GetPickUpWidget())
+			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if (TraceHitItem && TraceHitItem->GetPickUpWidget())
 			{
 				// Show Item PickUpWidget
-				HitItem->GetPickUpWidget()->SetVisibility(true);
+				TraceHitItem->GetPickUpWidget()->SetVisibility(true);
 			}
 
 			//we hit an AItem last frame
 			if (TraceHitItemLastFrame)
 			{
-				if (HitItem != TraceHitItemLastFrame)  //우리가 마지막으로 hit trace한 아이템과 현재 가리키는것이 다르다면
+				if (TraceHitItem != TraceHitItemLastFrame)  //우리가 마지막으로 hit trace한 아이템과 현재 가리키는것이 다르다면
 				{//혹은 아무것도 가리키고 있지 않거나!
 					TraceHitItemLastFrame->GetPickUpWidget()->SetVisibility(false);
 				}
 			}
 
 			//Store Reference to HitItem for next frame
-			TraceHitItemLastFrame = HitItem;
+			TraceHitItemLastFrame = TraceHitItem;
 		}
 	}
 
@@ -592,6 +611,9 @@ void AShooterCharacter::DropWeapon()
 	{
 		FDetachmentTransformRules DetachmentTransfromRules(EDetachmentRule::KeepWorld, true);
 		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransfromRules);
+
+		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
+		EquippedWeapon->ThrowWeapon();
 	}
 }
 
@@ -602,5 +624,17 @@ void AShooterCharacter::SelecButtonPressed()
 
 void AShooterCharacter::SelectButtonReleased()
 {
+	if (TraceHitItem)
+	{
+		TraceHitItem->StartItemCurve(this);
+	}
+	
+}
 
+void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
+{
+	DropWeapon();
+	EquipWeapon(WeaponToSwap);
+	TraceHitItem = nullptr;   //마지막에 
+	TraceHitItemLastFrame = nullptr;
 }

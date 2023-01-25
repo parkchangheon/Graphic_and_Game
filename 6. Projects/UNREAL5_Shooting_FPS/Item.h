@@ -64,6 +64,8 @@ protected:
 
 	void SetActiveStarts();
 	void SetItemProperties(EItemState State);
+	void FinishInterping();
+	void ItemInterp(float DeltaTime);
 
 public:	
 	// Called every frame
@@ -103,6 +105,37 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
 	EItemState ItemState;
 
+	//Curve Assets to use for the item's Z Location when Interping
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	class UCurveFloat* ItemZCurve;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	FVector ItemInterpStartLocation;
+		
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	FVector CameraTargetLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	bool bInterping;
+
+
+
+	FTimerHandle ItemInterpTimer;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	float ZCurveTime;
+
+	//pointer to the character 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	class AShooterCharacter* Character;
+
+	float ItemInterpX;
+	float ItemInterpY;
+
+	float InterpInitialYawOffset; // 카메라와 아이템 사이 
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* ItemScaleCurve;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickUpWidget() const { return PickUpWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
@@ -110,4 +143,8 @@ public:
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	void SetItemState(EItemState State);
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
+
+	void StartItemCurve(AShooterCharacter* Char);
+
+
 };
