@@ -8,6 +8,22 @@
 #include<iostream>
 using namespace std;
 
+
+class FileSystem0
+{
+public:
+	static FileSystem0& instance()
+	{
+		if (instance_ == NULL)
+			instance_ = new FileSystem0;
+		return *instance_;
+	}
+
+private:
+	FileSystem0() {}
+	static FileSystem0* instance_;
+};
+
 // 전역 접근점을 제공 ==> 따로 인스턴스를 생성할 수 없으므로, 전역에서 접근할 수 있는 메서드를 제공한다.
 class FileSystem
 {
