@@ -22,7 +22,46 @@ Createdefaultsubobject 함수가 생성자에서 호출되는 이유는 이 함수를 사용하여 멤버
 결론적으로, Createdefaultsubobject 함수는 UObject를 초기화하기 위해 생성자에서 호출되며, UObject의 멤버 변수를 초기화하는 데 중요한 역할을 합니다. Createdefaultsubobject 함수를 생성자 이외에서 사용할 때는 주의가 필요하며, 생성된 UObject의 소유권에 대한 책임이 있습니다.
 */
 
+void AMyCharacter::GetMonstersInRange()
+{
+    const FVector Start = GetActorLocation();
+    const FVector ForwardVector = GetActorForwardVector();
 
+    const float SphereRadius = 500.f; // Sphere Trace 반경 설정
+    const float HalfAngle = 15.f;
+    const float StartAngle = -HalfAngle;
+    const float EndAngle = HalfAngle;
+    const int32 NumSweeps = 10;
+    const float Increment = (EndAngle - StartAngle) / NumSweeps;
+
+    TArray<FHitResult> HitResults;
+
+    for (int32 i = 0; i < NumSweeps; ++i)
+    {
+        const float Angle = StartAngle + (i * Increment);
+        const FVector SweepDirection = ForwardVector.RotateAngleAxis(Angle, FVector(0.f, 0.f, 1.f));
+        const FVector End = Start + (SweepDirection * SphereRadius);
+
+        FCollisionQueryParams TraceParams;
+        TraceParams.AddIgnoredActor(this);
+
+        TArray<FHitResult> TempHitResults;
+
+        if (GetWorld()->SweepMultiByChannel(TempHitResults, Start, End, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(SphereRadius), TraceParams))
+        {
+            HitResults.Append(TempHitResults);
+        }
+    }
+
+    for (const FHitResult& HitResult : HitResults)
+    {
+        AMyMonster* Monster = Cast<AMyMonster>(HitResult.GetActor());
+        if (Monster)
+        {
+            // 몬스터 정보를 사용할 코드 작성
+        }
+    }
+}
 
 //2)
 /*
