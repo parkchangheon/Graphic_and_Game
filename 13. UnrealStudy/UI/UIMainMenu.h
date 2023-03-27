@@ -22,7 +22,7 @@ protected:
 	UNewUIMenu* NewWidget;
 
 	UPROPERTY()
-	UButton* NewGameButton;
+	UButton* Menu_Btn;
 
 	UPROPERTY()
 	UButton* QuitButton;

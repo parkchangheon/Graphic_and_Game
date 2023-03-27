@@ -2,6 +2,8 @@
 
 #include "GameMode/UINewGameMode.h"
 #include "UIMainMenu.h"
+#include "NewUIMenu.h"
+
 
 
 
