@@ -52,4 +52,15 @@ protected:
 	//Attack Hit Section
 protected:
 	virtual void AttackHitCheck() override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+//Dead Section
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<class UAnimMontage> DeadActionMontage;
+
+	virtual void SetDead();
+	void PlayDeadAnimation();
+
+	float DeadEventDelayTime = 5.0f;
+
 };

@@ -8,6 +8,8 @@
 #include "Character/ABComboActionData.h"
 #include "Physics/ABCollision.h"
 
+#include "Engine/DamageEvents.h"
+
 AABCharacter::AABCharacter()
 {
 	//Pawn
@@ -17,7 +19,7 @@ AABCharacter::AABCharacter()
 
 	//Capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_ABCAPSULE);
 
 	//Movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -31,7 +33,7 @@ AABCharacter::AABCharacter()
 	//Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard'"));
 	if (CharacterMeshRef.Object)
@@ -56,6 +58,30 @@ AABCharacter::AABCharacter()
 	if (QuarterDataRef.Object)
 	{
 		CharacterControlManager.Add(ECharacterControlType::Quater, QuarterDataRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_ComboAttack.AM_ComboAttack'"));
+	if (ComboActionMontageRef.Object)
+	{
+		ComboActionMontage = ComboActionMontageRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UABComboActionData> ComboActionDataRef(TEXT("/Script/testtt.ABComboActionData'/Game/ArenaBattle/CharacterAction/ABA_ComboAttack.ABA_ComboAttack'"));
+	if (ComboActionDataRef.Object)
+	{
+		ComboActionData = ComboActionDataRef.Object;
+	}
+
+	//static ConstructorHelpers::FObjectFinder<UABComboActionData> ComboActionDataRef(TEXT("/Script/testtt.ABComboActionData'/Game/ArenaBattle/CharacterAction/ABA_ComboAttack.ABA_ComboAttack'"));
+	//if (ComboActionDataRef.Object)
+	//{
+	//	ComboActionData = ComboActionDataRef.Object;
+	//}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_Dead.AM_Dead'"));
+	if (DeadActionMontageRef.Object)
+	{
+		DeadActionMontage = DeadActionMontageRef.Object;
 	}
 }
 
@@ -170,6 +196,8 @@ void AABCharacter::AttackHitCheck()
 
 	if (HitDetected)	//무언가 감지가 되었다면.
 	{
+		FDamageEvent DamageEvent;
+		OutHitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 
 	}
 
@@ -182,4 +210,33 @@ void AABCharacter::AttackHitCheck()
 #endif
 
 }
+
+float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	SetDead();
+
+	return DamageAmount;
+}
+
+void AABCharacter::SetDead()
+{
+	//EMovementMode::MOVE_NONE을 설정하면 캐릭터는 더이상 움직이지 않게된다.
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	PlayDeadAnimation();	//몽타주 재생
+	SetActorEnableCollision(false);	//죽었으니, 더이상 콜리전  처리는 x
+}
+
+void AABCharacter::PlayDeadAnimation()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		AnimInstance->StopAllMontages(0.0f);
+		AnimInstance->Montage_Play(DeadActionMontage, 1.0f);
+	}
+
+}
+
 
