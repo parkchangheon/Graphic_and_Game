@@ -6,6 +6,7 @@ void EmplyeeHandler::AddEmployee(ForeignSalesWorker* InFSWorker)
 {
 	FSWorkers.push_back(InFSWorker);
 }
+
 void EmplyeeHandler::ShowSalaryinfo()
 {
 	for (auto* FSWorker : FSWorkers)
