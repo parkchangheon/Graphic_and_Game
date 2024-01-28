@@ -8,3 +8,13 @@ C++/Passionate/Passionate_24/Passionate/Passionate.sln
 C++/Passionate/Passionate_24/Passionate/Passionate/Passionate.vcxproj
 C++/Passionate/Passionate_24/Passionate/Passionate/Passionate.vcxproj.filters
 C++/Passionate/Passionate_24/Passionate/Passionate/Passionate.vcxproj.user
+*.pdb
+*.exe
+*.obj
+*.idb
+*.tlog
+*.vsidx
+*.ipch
+*.recipe
+*.ilk
+*.log
