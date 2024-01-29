@@ -23,12 +23,12 @@ VDSecond::~VDSecond()
 }
 
 
-int main()
-{
-	VDFirst* ptr = new VDSecond("simple", "complex");
-	delete ptr;
-	return 0;
-}
+//int main()
+//{
+//	VDFirst* ptr = new VDSecond("simple", "complex");
+//	delete ptr;
+//	return 0;
+//}
 
 // ~First 만 호출이 된다.
 // 객체 소멸을 VDFirst형 포인터로 명령하여, ~First만 호출이 된것.
@@ -42,4 +42,5 @@ int main()
 // 하지만 virtual 이므로, ~VDSecond가 호출
 
 //~VDSecond가 실행되고, ~VDFirst가 실행됨.
+
 
