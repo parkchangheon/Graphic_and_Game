@@ -15,7 +15,7 @@ class Account
 {
 private:
 	int accID;
-	int balance;
+	double balance;
 	char* cusName;
 
 public:
@@ -23,7 +23,7 @@ public:
 	Account(const Account& ref);
 
 	int GetAccID() const;
-	virtual void Deposit(int money);
+	virtual void Deposit(double money);
 	int Withdraw(int money);
 	void ShowAccInfo() const;
 	~Account();
@@ -37,7 +37,7 @@ private:
 
 public:
 	NormalAccount(int ID, int money, char* name, int rate) : Account(ID, money, name), interRate(rate) {};
-	virtual void Deposit(int money) override;
+	virtual void Deposit(double money) override;
 };
 
 
@@ -47,7 +47,7 @@ private:
 	int specialRate;
 public:
 	HighCreditAccount(int ID, int money, char* name, int rate, int special) :NormalAccount(ID, money, name, rate), specialRate(special) {}
-	virtual void Deposit(int money)override;
+	virtual void Deposit(double money)override;
 };
 
 
